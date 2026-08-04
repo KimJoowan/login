@@ -8,7 +8,6 @@ import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
-@RequiredArgsConstructor
 public class SecurityConfig {
 
     @Bean

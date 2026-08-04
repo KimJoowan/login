@@ -41,8 +41,6 @@ public class SecurityConfig {
                 .loginProcessingUrl("/member/login")
                 .usernameParameter("id")
                 .passwordParameter("password")
-                // ⭐️ defaultSuccessUrl(..., true)을 지우고 핸들러만 남겨야 정상 작동합니다!
-                .successHandler(loginSuccessHandler) 
                 .failureUrl("/member/login?error")
                 .permitAll()
             )

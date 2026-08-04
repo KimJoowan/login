@@ -124,6 +124,13 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-taglibs</artifactId>
 		</dependency>
+		
+		<!-- [선택] Argon2 알고리즘을 사용하기 위한 고성능 암호 라이브러리 -->
+		<dependency>
+        	<groupId>org.bouncycastle</groupId>
+        	<artifactId>bcprov-jdk18on</artifactId>
+        	<version>1.78.1</version> <!-- 2026년 기준 안정화 버전 -->
+    	</dependency>
 	</dependencies>
 	<build>
 		<plugins>

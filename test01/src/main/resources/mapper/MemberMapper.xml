@@ -37,6 +37,15 @@
     		id = #{id}
     </update>
     
+    <update id="updatePassword" parameterType="com.example.demo.domain.MemberDto">
+    	UPDATE 
+    		public.testbase
+    	SET
+        	"password" = #{password}
+    	WHERE 
+    		id = #{id}
+    </update>
+    
     <!-- 회원탈퇴 -->
     <delete id="deleteMember" parameterType="String">
         DELETE FROM 

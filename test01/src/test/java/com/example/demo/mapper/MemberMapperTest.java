@@ -7,10 +7,15 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.example.demo.domain.MemberDto;
 
+import lombok.RequiredArgsConstructor;
+
+
 @SpringBootTest
+@RequiredArgsConstructor
 public class MemberMapperTest {
 	
     @Autowired

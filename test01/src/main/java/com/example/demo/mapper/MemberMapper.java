@@ -18,6 +18,8 @@ public interface MemberMapper {
     int deleteMember(String id);
     
     void updateMember(MemberDto Dto);
+
+	void updatePassword(String id, String password);
     
 
 

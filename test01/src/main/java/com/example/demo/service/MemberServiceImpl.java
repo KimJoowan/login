@@ -1,7 +1,5 @@
 package com.example.demo.service; 
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -13,10 +11,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService{
-	
-	private static final Logger log = LogManager.getLogger(MemberServiceImpl.class);
-
-
 	private final MemberMapper Mapper;
 	private final PasswordEncoder passwordEncoder;
 

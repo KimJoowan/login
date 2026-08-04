@@ -22,6 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private final MemberMapper memberMapper;
 
+    
     @Override
     public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
 

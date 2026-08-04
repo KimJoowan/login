@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+
+
+<mapper namespace="com.example.demo.mapper.MemberMapper">
+
+    <select id="selectAll" resultType="com.example.demo.domain.MemberDto">
+        SELECT 
+        	id, userName
+        FROM 
+        	public.testbase
+    </select>
+    
+     <select id="findById" parameterType="String" resultType="com.example.demo.domain.MemberDto">
+        SELECT 
+        	"id", password, "userName", email, "isActive", role
+        FROM 
+        	public.testbase
+        WHERE 
+        	id = #{id}
+    </select>
+    
+    <!-- 회원가입 -->
+    <insert id="insertMember" parameterType="com.example.demo.domain.MemberDto">
+        INSERT INTO public.testbase
+            (id, password, "userName", email, "isActive")
+        VALUES
+            (#{id}, #{password}, #{userName}, #{email}, true)
+    </insert>
+    
+    <update id="updateMember" parameterType="com.example.demo.domain.MemberDto">
+    	UPDATE 
+    		public.testbase
+    	SET
+        	"userName" = #{userName}
+    	WHERE 
+    		id = #{id}
+    </update>
+    
+    <!-- 회원탈퇴 -->
+    <delete id="deleteMember" parameterType="String">
+        DELETE FROM 
+        	public.testbase
+        WHERE 
+        	id = #{id}
+    </delete>
+
+</mapper>

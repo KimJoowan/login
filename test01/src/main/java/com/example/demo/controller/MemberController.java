@@ -44,7 +44,7 @@ public class MemberController {
 	}
 	
 	@GetMapping("/check-id")
-	public ResponseEntity<Map<String, Boolean>> checkUsername(@RequestParam("id") String id) {
+	public ResponseEntity<Map<String, Boolean>> checkUsername(String id) {
 		
 		boolean isDuplicate = (service.findById(id) != null);
 

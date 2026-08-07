@@ -83,7 +83,6 @@ public class MemberController {
 		service.deleteMember(id);
 		request.getSession().invalidate();
 
-		
 		return "redirect:/";
 	}
 	 

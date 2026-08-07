@@ -10,4 +10,6 @@ public interface MemberService {
 	void updateMember(MemberDto dto);	
 	
 	void deleteMember(String id);
+
+	void increaseLoginFailCount(int number);
 }

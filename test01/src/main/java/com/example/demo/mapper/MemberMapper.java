@@ -20,7 +20,4 @@ public interface MemberMapper {
     void updateMember(MemberDto Dto);
 
 	void updatePassword(String id, String password);
-    
-
-
 }

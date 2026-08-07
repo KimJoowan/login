@@ -7,12 +7,10 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.example.demo.domain.MemberDto;
 
 import lombok.RequiredArgsConstructor;
-
 
 @SpringBootTest
 @RequiredArgsConstructor
@@ -35,7 +33,7 @@ public class MemberMapperTest {
     
     @Test
     void findByIdTest() {
-    	String id = "aa";
+    	String id = "addda";
     	
     	MemberDto member = memberMapper.findById(id);
     	log.info(member);
@@ -44,11 +42,10 @@ public class MemberMapperTest {
     @Test
     void insertMemberTest() {
     	MemberDto member = new MemberDto();
-    	member.setId("1");
-    	member.setPassword("sss");
+    	member.setId("bb");
+    	member.setPassword("aa");
     	member.setUserName("kimof");
     	member.setEmail("test@test.com");
-    	member.setActive(true);
 
     	int result = memberMapper.insertMember(member);
     	log.info("회원가입 결과: {}", result);
@@ -56,7 +53,7 @@ public class MemberMapperTest {
     
     @Test
     void deleteMemberTest() {
-        String id = "a";
+        String id = "zz";
         
         int result = memberMapper.deleteMember(id);
         log.info("회원탈퇴 결과: {}", result);
@@ -66,7 +63,7 @@ public class MemberMapperTest {
     @Test
     void updateMemberTest() {   	  
     	MemberDto dto = new MemberDto();   
-    	dto.setId("aa");
+    	dto.setId("ee");
     	dto.setUserName("bb");
     	dto.setEmail("a01055136572@gmail.com");
     	

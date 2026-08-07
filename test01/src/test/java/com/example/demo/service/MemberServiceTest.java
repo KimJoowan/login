@@ -19,11 +19,10 @@ public class MemberServiceTest {
 	@Test
 	public void register() {
 		MemberDto member = new MemberDto(); 
-    	member.setId("1");
-    	member.setPassword("sss");
-    	member.setUserName("kimddo");
+    	member.setId("zz");
+    	member.setPassword("tt");
+    	member.setUserName("tt");
     	member.setEmail("test@test.com");
-    	member.setActive(true);
     	
 		servie.register(member);
 	}
@@ -31,9 +30,10 @@ public class MemberServiceTest {
 	@Test
 	public void findById() {
 		log.info("==============================================================================================");
-		log.info(servie.findById("aa"));
+		log.info(servie.findById("zz"));
 		log.info("==============================================================================================");
 	}
+
 	
 	@Test
 	public void update() {
@@ -47,8 +47,16 @@ public class MemberServiceTest {
 	
 	@Test
 	public void delete() {
-		servie.deleteMember("1");
+		String id = "zz";
+		servie.deleteMember(id);
 	}
+	
+	@Test
+	public void increaseLoginFailCount() {
+		servie.increaseLoginFailCount(82);
+	}
+	
+	
 	
 	
 	

@@ -1,7 +1,5 @@
 package com.example.demo.service;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,16 +15,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 	
-	private static final Logger log = LogManager.getLogger(CustomUserDetailsService.class);
-
-
     private final MemberMapper memberMapper;
 
-    
     @Override
     public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
 
-    	log.info("test");
         MemberDto member = memberMapper.findById(id);
 
         if (member == null) {

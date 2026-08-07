@@ -21,7 +21,7 @@ public class SecurityConfig {
 	private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 	
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
         	// 아래 corsConfigurationSource Bean의 정책 사용
         	.cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -77,7 +77,7 @@ public class SecurityConfig {
     }
     
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(List.of(
@@ -115,8 +115,8 @@ public class SecurityConfig {
         return source;
     }
     
-    @Bean
-	 public HttpSessionEventPublisher httpSessionEventPublisher() {
+     @Bean
+	 HttpSessionEventPublisher httpSessionEventPublisher() {
 		 return new HttpSessionEventPublisher();
 	}
 }

@@ -18,7 +18,7 @@ public class PasswordConfig {
     private String pepper;
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    PasswordEncoder passwordEncoder() {
         String idForEncode = "argon2-pepper";
         Map<String, PasswordEncoder> encoders = new HashMap<>();
      

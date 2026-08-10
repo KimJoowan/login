@@ -56,6 +56,13 @@ public class AccountLockMapperTest {
     }
     
     
+    @Test
+    void recordSuccess() {
+    	int num = 83;
+    	accountLockMapper.recordSuccess(num);
+    }
+    
+    
     
     
     

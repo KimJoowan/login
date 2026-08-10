@@ -20,7 +20,15 @@
         	number = #{number}
     </select>
 
-
+	<update id="recordSuccess" parameterType="int">
+    	UPDATE 
+    		public.account_lock
+    	SET
+        	fail_Count  = 0,
+        	active = true
+    	WHERE 
+    		number = #{number}
+    </update>
 
 
 

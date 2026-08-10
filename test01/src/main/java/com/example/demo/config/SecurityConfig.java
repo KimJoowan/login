@@ -18,7 +18,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 	
-	private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+	private final CustomAuthenticationFailureHandler failureHandler;
+	private final CustomLoginSuccessHandler successHandler;
 	
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -51,10 +52,10 @@ public class SecurityConfig {
             .formLogin(form -> form
                 .loginPage("/member/login")
                 .loginProcessingUrl("/member/login")
-                .usernameParameter("id")
+                .usernameParameter("id") 
                 .passwordParameter("password")
-                .defaultSuccessUrl("/", true)
-                .failureHandler(customAuthenticationFailureHandler)               
+                .successHandler(successHandler)
+                .failureHandler(failureHandler)               
                 .permitAll()
             )
                       
@@ -115,7 +116,7 @@ public class SecurityConfig {
         return source;
     }
     
-     @Bean
+    @Bean
 	 HttpSessionEventPublisher httpSessionEventPublisher() {
 		 return new HttpSessionEventPublisher();
 	}

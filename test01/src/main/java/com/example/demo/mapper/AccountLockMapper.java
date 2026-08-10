@@ -9,4 +9,6 @@ public interface AccountLockMapper {
 	void increaseLoginFailCount(AccountLockDto dto);
 	
 	int findById(int num);
+	
+	int recordSuccess(int num);
 }

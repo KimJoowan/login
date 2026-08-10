@@ -38,7 +38,7 @@ public class MemberMapperTest {
     	MemberDto member = memberMapper.findById(id);
     	log.info(member);
     }
-      
+    
     @Test
     void insertMemberTest() {
     	MemberDto member = new MemberDto();

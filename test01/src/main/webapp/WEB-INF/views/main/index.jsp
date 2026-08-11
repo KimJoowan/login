@@ -5,7 +5,7 @@
 			<c:url var="signupUrl" value="/member/signup" />
 			<c:url var="logoutUrl" value="/member/logout" />
 			<c:url var="memberInfoUrl" value="/member/info" />
-
+			
 			<!DOCTYPE html>
 			<html lang="ko" xmlns:th="http://www.thymeleaf.org"
 				xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
@@ -15,14 +15,12 @@
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
 				<title>메인 - My Web Service</title>
 				<!-- Tailwind CSS CDN -->
-				<script src="https://cdn.tailwindcss.com"></script>
+				<link rel="stylesheet" href="<c:url value='/css/tailwind.css'/>">
 				<!-- Google Fonts - Noto Sans KR -->
-				<link rel="stylesheet"
-					href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap">
 				<link rel="stylesheet" href="<c:url value='/css/main/index.css'/>">
 			</head>
 
-			<body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen">
+			<body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen"> 
 
 				<!-- Navigation Header -->
 				<header class="bg-white border-b border-gray-200 sticky top-0 z-50">

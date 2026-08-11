@@ -1,9 +1,10 @@
 package com.example.demo.service;
 
 import com.example.demo.domain.MemberDto;
+import com.example.demo.domain.SignupRequest;
 
 public interface MemberService {
-	public void register(MemberDto Dto);
+	public void register(SignupRequest request);
 
 	public MemberDto findById(String id);
 
@@ -14,4 +15,5 @@ public interface MemberService {
 	void increaseLoginFailCount(int number);
 
 	void recordSuccess(int num);
+
 }

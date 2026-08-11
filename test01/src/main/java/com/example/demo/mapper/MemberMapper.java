@@ -8,7 +8,6 @@ import com.example.demo.domain.MemberDto;
 
 @Mapper
 public interface MemberMapper {
-
     List<MemberDto> selectAll();
     
     MemberDto findById(String id);

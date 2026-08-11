@@ -25,7 +25,7 @@
 						<label for="id">아이디</label>
 
 						<div class="input-with-btn">
-							<input type="text" id="id" name="id" placeholder="사용할 아이디를 입력하세요" autocomplete="username"
+							<input type="text" id="id" name="id" placeholder="사용할 아이디를 입력하세요" autocomplete="username" minlength="4" maxlength="30"
 								required>
 
 							<button type="button" id="btnCheckUsername" class="btn-check">
@@ -39,7 +39,7 @@
 					<div class="input-group">
 						<label for="password">비밀번호</label>
 
-						<input type="password" id="password" name="password" placeholder="비밀번호를 입력하세요"
+						<input type="password" id="password" name="password" placeholder="비밀번호를 입력하세요" minlength="10" maxlength="100"
 							autocomplete="new-password" required>
 					</div>
 
@@ -59,13 +59,13 @@
 					<div class="input-group">
 						<label for="userName">닉네임</label>
 
-						<input type="text" id="userName" name="userName" placeholder="사용할 닉네임을 입력하세요" required>
+						<input type="text" id="userName" name="userName" placeholder="사용할 닉네임을 입력하세요" maxlength="30" required>
 					</div>
 
 					<div class="input-group">
 						<label for="email">이메일</label>
 
-						<input type="email" id="email" name="email" placeholder="example@email.com" autocomplete="email"
+						<input type="email" id="email" name="email" placeholder="example@email.com" autocomplete="email" maxlength="254"
 							required>
 					</div>
 

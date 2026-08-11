@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.example.demo.domain.MemberDto;
+import com.example.demo.domain.SignupRequest;
 
 @SpringBootTest
 public class MemberServiceTest {
@@ -21,32 +22,36 @@ public class MemberServiceTest {
 	private static final Logger log = LogManager.getLogger(MemberServiceTest.class);
 	
 	@Autowired
-	private MemberService servie;
+	private MemberService service;
 	
-	@RepeatedTest(value = 10, name = "{displayName} - {currentRepetition}/{totalRepetitions}")
-    @DisplayName("회원가입 서비스 10회 반복 테스트")
-    public void registerRepeatedTest(RepetitionInfo repetitionInfo) {
-        int current = repetitionInfo.getCurrentRepetition();
+	@RepeatedTest(
+		    value = 10,
+		    name = "{displayName} - {currentRepetition}/{totalRepetitions}"
+		)
+		@DisplayName("회원가입 서비스 10회 반복 테스트")
+		void registerRepeatedTest(RepetitionInfo repetitionInfo) {
+		    int current = repetitionInfo.getCurrentRepetition();
 
-        // Given (반복마다 다른 ID/이메일 적용)
-        MemberDto member = new MemberDto(); 
-        member.setId("zz_" + current);
-        
-        String randomStr = UUID.randomUUID().toString().substring(0, 16);
-        member.setPassword(randomStr);
-        
-        member.setUserName("tt_" + current);
-        member.setEmail("test" + current + "@test.com");
+		    String uniqueValue = UUID.randomUUID()
+		            .toString()
+		            .replace("-", "")
+		            .substring(0, 12);
 
-        // When & Then (예외 없이 정상 실행되는지 검증)
-        assertThatCode(() -> servie.register(member))
-                .doesNotThrowAnyException();
-    }
+		    SignupRequest request = new SignupRequest(
+		        "zz_" + uniqueValue,
+		        UUID.randomUUID().toString().substring(0, 16),
+		        "tt_" + current,
+		        "test_" + uniqueValue + "@test.com"
+		    );
+
+		    assertThatCode(() -> service.register(request))
+		            .doesNotThrowAnyException();
+		}
 	
 	@Test
 	public void findById() {
 		log.info("==============================================================================================");
-		log.info(servie.findById("zz"));
+		log.info(service.findById("zz"));
 		log.info("==============================================================================================");
 	}
 
@@ -58,23 +63,23 @@ public class MemberServiceTest {
     	dto.setUserName("bb");
     	dto.setEmail("a01055136572@gmail.com");
     	
-        servie.updateMember(dto);
+    	service.updateMember(dto);
 	}
 	
 	@Test
 	public void delete() {
 		String id = "zz";
-		servie.deleteMember(id);
+		service.deleteMember(id);
 	}
 	
 	@Test
 	public void increaseLoginFailCount() {
-		servie.increaseLoginFailCount(82);
+		service.increaseLoginFailCount(82);
 	}
 	
 	@Test
 	public void recordSuccess() {
-		servie.recordSuccess(82);		
+		service  .recordSuccess(82);		
 	
 	}
 	

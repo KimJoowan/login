@@ -6,10 +6,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.example.demo.ratelimit.ApiRateLimiter;
+import com.example.demo.ratelimit.RateLimitFilter;
 
 import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +24,14 @@ public class SecurityConfig {
 	
 	private final CustomAuthenticationFailureHandler failureHandler;
 	private final CustomLoginSuccessHandler successHandler;
+	private final ApiRateLimiter apiRateLimiter;
 	
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+        	// 최전방(UsernamePasswordAuthenticationFilter 직전)에 속도 제한 필터 배치
+        	.addFilterBefore(new RateLimitFilter(apiRateLimiter), UsernamePasswordAuthenticationFilter.class)
+        	
         	// 아래 corsConfigurationSource Bean의 정책 사용
         	.cors(cors -> cors.configurationSource(corsConfigurationSource()))
         	
@@ -112,7 +120,7 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source =
             new UrlBasedCorsConfigurationSource();
 
-        source.registerCorsConfiguration("/api/**", configuration);
+        source.registerCorsConfiguration("/member/**", configuration);
         return source;
     }
     

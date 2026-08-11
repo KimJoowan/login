@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.domain.AccountLockDto;
 import com.example.demo.domain.MemberDto;
+import com.example.demo.domain.SignupRequest;
 import com.example.demo.mapper.AccountLockMapper;
 import com.example.demo.mapper.MemberMapper;
 
@@ -23,10 +24,14 @@ public class MemberServiceImpl implements MemberService{
 	
 
 	@Override
-	public void register(MemberDto member) {			
-		String password = passwordEncoder.encode(member.getPassword());
-		member.setPassword(password);
+	public void register(SignupRequest request){	
+		MemberDto member = new MemberDto();
 		
+		member.setId(request.id());
+		member.setPassword(passwordEncoder.encode(request.password()));
+		member.setUserName(request.userName());
+	    member.setEmail(request.email());
+
 		memberMapper.insertMember(member);
 	}
 	

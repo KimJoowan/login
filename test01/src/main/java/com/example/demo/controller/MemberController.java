@@ -1,4 +1,4 @@
-package com.example.demo.controller;
+   package com.example.demo.controller;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,14 +7,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.example.demo.domain.MemberDto;
+import com.example.demo.domain.SignupRequest;
 import com.example.demo.service.MemberService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -31,10 +35,36 @@ public class MemberController {
 		return "member/signup";
 	}
 	
+	
+/*
 	@PostMapping("/signup")
 	public String register2(MemberDto member) {
 		service.register(member);
 		return "redirect:/";
+	}
+*/
+	@PostMapping("/signup")
+	public String register(
+	        @Valid @ModelAttribute("signupRequest")
+	        SignupRequest request,
+	        BindingResult bindingResult) {
+
+	    if (bindingResult.hasErrors()) {
+	        return "member/signup";
+	    }
+
+	    if (service.findById(request.id()) != null) {
+	        bindingResult.rejectValue(
+	            "id",
+	            "duplicate.id",
+	            "이미 사용 중인 아이디입니다."
+	        );
+
+	        return "member/signup";
+	    }
+
+	    service.register(request);
+	    return "redirect:/member/login";
 	}
 	
 	@GetMapping("/login")
@@ -59,7 +89,6 @@ public class MemberController {
 		String id = authentication.getName();
 		
 		 MemberDto dto = service.findById(id);
-		 log.info("dto: {}", dto.getId());
 		 
 		 model.addAttribute("member", dto); 
 		 

@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.example.demo.domain.MemberDto;
 import com.example.demo.domain.SignupRequest;
 
 @SpringBootTest
@@ -53,17 +52,6 @@ public class MemberServiceTest {
 		log.info("==============================================================================================");
 		log.info(service.findById("zz"));
 		log.info("==============================================================================================");
-	}
-
-	
-	@Test
-	public void update() {
-		MemberDto dto = new MemberDto();   
-    	dto.setId("aa");
-    	dto.setUserName("bb");
-    	dto.setEmail("a01055136572@gmail.com");
-    	
-    	service.updateMember(dto);
 	}
 	
 	@Test

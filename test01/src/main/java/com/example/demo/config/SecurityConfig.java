@@ -1,16 +1,11 @@
 package com.example.demo.config;
 
-import java.util.List;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.example.demo.ratelimit.ApiRateLimiter;
 import com.example.demo.ratelimit.RateLimitFilter;
@@ -32,9 +27,21 @@ public class SecurityConfig {
         	// 최전방(UsernamePasswordAuthenticationFilter 직전)에 속도 제한 필터 배치
         	.addFilterBefore(new RateLimitFilter(apiRateLimiter), UsernamePasswordAuthenticationFilter.class)
         	
-        	// 아래 corsConfigurationSource Bean의 정책 사용
-        	.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-        	
+        	.headers(headers -> headers
+        		    .contentSecurityPolicy(csp -> csp
+        		        .policyDirectives(
+        		            "default-src 'self'; " +
+        		            "script-src 'self'; " +
+        		            "style-src 'self'; " +
+        		            "img-src 'self' data:; " +
+        		            "font-src 'self'; " +
+        		            "object-src 'none'; " +
+        		            "base-uri 'self'; " +
+        		            "frame-ancestors 'none'"
+        		        )
+        		    )
+        		)
+        	  
             // Spring Security 6.x 기준 정적 자원 및 URL 권한 설정
             .authorizeHttpRequests(auth -> auth
                 .dispatcherTypeMatchers(
@@ -49,6 +56,7 @@ public class SecurityConfig {
                     "/css/**", 
                     "/js/**", 
                     "/images/**", 
+                    "/fonts/**",
                     "/error",
                     "/.well-known/appspecific/com.chrome.devtools.json"
                 ).permitAll()
@@ -85,44 +93,7 @@ public class SecurityConfig {
         return http.build();
     }
     
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-
-        configuration.setAllowedOrigins(List.of(
-            "http://localhost:3000",
-            "http://localhost:5173",
-            "https://example.com"
-        ));
-
-        configuration.setAllowedMethods(List.of(
-            "GET",
-            "POST",
-            "PUT",
-            "PATCH",
-            "DELETE",
-            "OPTIONS"
-        ));
-
-        configuration.setAllowedHeaders(List.of(
-            "Authorization",
-            "Content-Type",
-            "X-Requested-With",
-            "X-XSRF-TOKEN"
-        ));
-
-        // 세션 쿠키를 다른 Origin에서 전송할 때 필요
-        configuration.setAllowCredentials(true);
-
-        // 브라우저의 preflight 결과 캐시 시간
-        configuration.setMaxAge(3600L);
-
-        UrlBasedCorsConfigurationSource source =
-            new UrlBasedCorsConfigurationSource();
-
-        source.registerCorsConfiguration("/member/**", configuration);
-        return source;
-    }
+    
     
     @Bean
 	 HttpSessionEventPublisher httpSessionEventPublisher() {

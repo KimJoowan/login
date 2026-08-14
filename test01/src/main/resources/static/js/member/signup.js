@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function() {
     let isUsernameChecked = false;
 
     // 아이디 정규식 (영문 소문자, 숫자, 언더바(_), 하이픈(-), 4~20자)
-    const idRegex = /^[a-z0-9_-]{4,20}$/;
+    const idRegex = /^[a-zA-Z0-9_]{4,30}$/;
 
     // 비밀번호 에러 메시지 초기화 함수
     function clearPasswordError() {
@@ -58,11 +58,15 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             });
 
-            if (!response.ok) {
-                throw new Error("요청 실패: " + response.status);
-            }
-
             const data = await response.json();
+			
+			if (!response.ok) {
+			    usernameMsg.textContent =
+			        data.message || "올바른 아이디를 입력해주세요.";
+			    usernameMsg.className = "check-message error";
+			    isUsernameChecked = false;
+			    return;
+			}
 
             if (data.isDuplicate) {
                 usernameMsg.textContent = "이미 사용 중인 아이디입니다.";

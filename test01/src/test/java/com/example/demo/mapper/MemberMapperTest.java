@@ -1,12 +1,16 @@
 package com.example.demo.mapper;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.domain.MemberDto;
 
@@ -14,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 
 @SpringBootTest
 @RequiredArgsConstructor
+@Transactional
 public class MemberMapperTest {
 	
     @Autowired
@@ -27,7 +32,8 @@ public class MemberMapperTest {
         log.info("조회된 데이터 개수: {}", list.size());
 
         for (MemberDto member : list) {
-        	log.info("member:",member);
+	        	log.info("member: number={}, id={}, userName={}, email={}, role={}",
+	        			member.getNumber(), member.getId(), member.getUserName(), member.getEmail(), member.getRole());
         }
     }
     
@@ -36,19 +42,31 @@ public class MemberMapperTest {
     	String id = "addda";
     	
     	MemberDto member = memberMapper.findById(id);
-    	log.info(member);
+	    	if (member == null) {
+	    		log.info("member not found: id={}", id);
+	    	} else {
+	    		log.info("member: number={}, id={}, userName={}, email={}, role={}",
+	    				member.getNumber(), member.getId(), member.getUserName(), member.getEmail(), member.getRole());
+	    	}
     }
     
     @Test
     void insertMemberTest() {
     	MemberDto member = new MemberDto();
-    	member.setId("bb");
-    	member.setPassword("aa");
-    	member.setUserName("kimof");
-    	member.setEmail("test@test.com");
+    	
+    	String uniqueValue = UUID.randomUUID()
+                .toString()
+                .replace("-", "")
+                .substring(0, 12);
 
-    	int result = memberMapper.insertMember(member);
-    	log.info("회원가입 결과: {}", result);
+        member.setId("test_" + uniqueValue);
+        member.setPassword("encoded-test-password");
+        member.setUserName("테스트");
+        member.setEmail(uniqueValue + "@test.com");
+
+        int result = memberMapper.insertMember(member);
+
+        assertThat(result).isEqualTo(1);
     }
     
     @Test

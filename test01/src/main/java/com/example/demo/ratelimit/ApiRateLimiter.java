@@ -1,8 +1,11 @@
 package com.example.demo.ratelimit;
 
-import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
-import java.time.Duration;
+import io.github.bucket4j.ConsumptionProbe;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.stereotype.Component;
@@ -11,33 +14,56 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
 @Component
+@RequiredArgsConstructor
 public class ApiRateLimiter {
 
-    // 1. Caffeine 캐시 정의 (10분간 요청이 없으면 캐시에서 버킷 삭제)
-    private final Cache<String, Bucket> cache = Caffeine.newBuilder()
-            .expireAfterAccess(10, TimeUnit.MINUTES)
-            .build();
+	private final RateLimitBucketFactory bucketFactory;
 
-    // 2. IP 또는 API Key별 버킷 가져오기/생성하기
-    public Bucket resolveBucket(String key) {
-        return cache.get(key, k -> createNewBucket());
-    }
+	private final Cache<String, Bucket> cache = Caffeine.newBuilder().expireAfterAccess(30, TimeUnit.MINUTES).build();
 
-    // 3. 버킷 정책 정의 (예: 1분당 최대 10개 요청 허용)
-    private Bucket createNewBucket() {
-        Bandwidth limit = Bandwidth.builder()
-                .capacity(30)
-                .refillGreedy(10, Duration.ofMinutes(1))
-                .build();
-        
-        return Bucket.builder()
-                .addLimit(limit)
-                .build();
-    }
+	public ConsumptionProbe tryConsumeSession(String clientKey, String endpoint) {
 
-    // 4. API 요청 허용 여부 확인 메소드
-    public boolean tryConsume(String key) {
-        Bucket bucket = resolveBucket(key);
-        return bucket.tryConsume(1); // 토큰 1개 소비 시도
-    }
+		Bucket bucket = cache.get("session:" + clientKey, ignored -> bucketFactory.createSessionBucket(endpoint));
+
+		return consume(bucket);
+	}
+
+	public ConsumptionProbe tryConsumeIp(String clientIp, String endpoint) {
+
+		String key = "ip:" + endpoint + ":" + clientIp;
+
+		Bucket bucket = cache.get(key, ignored -> bucketFactory.createIpBucket(endpoint));
+
+		return consume(bucket);
+	}
+
+	public ConsumptionProbe tryConsumeGlobal(String endpoint) {
+		String key = "global:" + endpoint;
+
+		Bucket bucket = cache.get(key, ignored -> bucketFactory.createGlobalBucket(endpoint));
+
+		return consume(bucket);
+	}
+
+	private ConsumptionProbe consume(Bucket bucket) {
+		return bucket.tryConsumeAndReturnRemaining(1);
+	}
+
+	public String getClientIp(HttpServletRequest request) {
+		String remoteAddress = request.getRemoteAddr();
+
+		return remoteAddress != null && !remoteAddress.isBlank() ? remoteAddress : "unknown";
+	}
+
+	public String createClientKey(HttpServletRequest request, String endpoint) {
+		String clientIp = getClientIp(request);
+
+		// 기존 세션만 조회하며 새 세션은 생성하지 않음
+		HttpSession session = request.getSession(false);
+
+		String sessionId = session != null ? session.getId() : "anonymous";
+
+		return endpoint + ":" + clientIp + ":" + sessionId;
+	}
+
 }

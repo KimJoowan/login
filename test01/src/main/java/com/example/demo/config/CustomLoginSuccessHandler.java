@@ -17,28 +17,27 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler{
+public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
-    private final MemberService memberService;
-    
-    private final MemberMapper memberMapper;
-	
-	
+	private final MemberService memberService;
+
+	private final MemberMapper memberMapper;
+
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws IOException, ServletException {
-		
+
 		// 로그인에 사용된 아이디
-        String id = authentication.getName();
-        
-        MemberDto dto = memberMapper.findById(id);
-        
-        if(dto != null) {
-        	int num = dto.getNumber();
-        	memberService.recordSuccess(num); 
-        }     
-        
-        response.sendRedirect("/");
+		String id = authentication.getName();
+
+		MemberDto dto = memberMapper.findById(id);
+
+		if (dto != null) {
+			int num = dto.getNumber();
+			memberService.recordSuccess(num);
+		}
+
+		response.sendRedirect("/");
 	}
 
 }

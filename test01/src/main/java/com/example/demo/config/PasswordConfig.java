@@ -13,31 +13,31 @@ import java.util.Map;
 @Configuration
 public class PasswordConfig {
 
-    @Value("${myapp.security.pepper}")
-    private String pepper;
+	@Value("${myapp.security.pepper}")
+	private String pepper;
 
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        String idForEncode = "argon2-pepper";
-        Map<String, PasswordEncoder> encoders = new HashMap<>();
-     
-        // 신형 Argon2 + 페퍼 결합
-        encoders.put("argon2-pepper", createPepperEncoder(new Argon2PasswordEncoder(16, 32, 2, 65536, 3)));
+	@Bean
+	PasswordEncoder passwordEncoder() {
+		String idForEncode = "argon2-pepper";
+		Map<String, PasswordEncoder> encoders = new HashMap<>();
 
-        return new DelegatingPasswordEncoder(idForEncode, encoders);
-    }
+		// 신형 Argon2 + 페퍼 결합
+		encoders.put("argon2-pepper", createPepperEncoder(new Argon2PasswordEncoder(16, 32, 2, 65536, 3)));
 
-    private PasswordEncoder createPepperEncoder(PasswordEncoder delegate) {
-        return new PasswordEncoder() {
-            @Override
-            public String encode(CharSequence rawPassword) {
-                return delegate.encode(rawPassword + pepper);
-            }
+		return new DelegatingPasswordEncoder(idForEncode, encoders);
+	}
 
-            @Override
-            public boolean matches(CharSequence rawPassword, String encodedPassword) {
-                return delegate.matches(rawPassword + pepper, encodedPassword);
-            }
-        };
-    }
+	private PasswordEncoder createPepperEncoder(PasswordEncoder delegate) {
+		return new PasswordEncoder() {
+			@Override
+			public String encode(CharSequence rawPassword) {
+				return delegate.encode(rawPassword + pepper);
+			}
+
+			@Override
+			public boolean matches(CharSequence rawPassword, String encodedPassword) {
+				return delegate.matches(rawPassword + pepper, encodedPassword);
+			}
+		};
+	}
 }

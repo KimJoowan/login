@@ -28,18 +28,13 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
         }
              
-        int count = accountLockMapper.findById(member.getNumber());
-              
-        if(count > 4) {
-        	throw new UsernameNotFoundException("계정이 잠겨있습니다.");
-        }
-
-        System.out.println("로그인 ID = " + id);
+        boolean loginAllowed = accountLockMapper.isLoginAllowed(member.getNumber());
 
         return User.builder()
                 .username(member.getId())
                 .password(member.getPassword())
                 .roles(member.getRole())
+                .accountLocked(!loginAllowed)
                 .build();
     }
 }

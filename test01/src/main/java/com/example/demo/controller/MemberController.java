@@ -39,7 +39,11 @@ public class MemberController {
 	}
 
 	@PostMapping("/signup")
-	public String register(@Valid @ModelAttribute("signupRequest") SignupRequest request, BindingResult bindingResult) {
+	public String register(@Valid @ModelAttribute("signupRequest") SignupRequest request, BindingResult bindingResult) {		
+		if (bindingResult.hasErrors()) {
+		    return "member/signup";
+		}
+			
 		try {
 			service.register(request);
 		} catch (DataIntegrityViolationException e) {

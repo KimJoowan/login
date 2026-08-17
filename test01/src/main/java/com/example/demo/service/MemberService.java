@@ -13,9 +13,9 @@ public interface MemberService {
 	
 	void deleteMember(String id);
 
-	void increaseLoginFailCount(int number);
+	void increaseLoginFailCountById(String id);
 
-	void recordSuccess(int num);
+	void recordSuccess(String id);
 	
 	
 

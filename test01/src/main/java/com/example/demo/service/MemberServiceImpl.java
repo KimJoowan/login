@@ -65,13 +65,13 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public void increaseLoginFailCount(int number) {
-		accountLockMapper.increaseLoginFailCount(number);
+	public void increaseLoginFailCountById(String id) {
+		accountLockMapper.increaseLoginFailCountById(id);
 	}
 
 	@Override
-	public void recordSuccess(int num) {
-		accountLockMapper.recordSuccess(num);
+	public void recordSuccess(String id) {
+		accountLockMapper.recordSuccess(id);
 	}
 
 }

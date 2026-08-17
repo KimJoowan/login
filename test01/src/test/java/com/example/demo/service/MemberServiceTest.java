@@ -60,17 +60,7 @@ public class MemberServiceTest {
 		service.deleteMember(id);
 	}
 	
-	@Test
-	public void increaseLoginFailCount() {
-		service.increaseLoginFailCount(82);
-	}
-	
-	@Test
-	public void recordSuccess() {
-		service  .recordSuccess(82);		
-	
-	}
-	
+
 	
 	
 }

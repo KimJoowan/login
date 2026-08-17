@@ -40,26 +40,13 @@ public class MemberController {
 
 	@PostMapping("/signup")
 	public String register(@Valid @ModelAttribute("signupRequest") SignupRequest request, BindingResult bindingResult) {
-
-		if (bindingResult.hasErrors()) {
-			return "member/signup";
-		}
-
-		if (service.findById(request.id()) != null) {
-			bindingResult.rejectValue("id", "duplicate.id", "이미 사용 중인 아이디입니다.");
-			return "member/signup";
-		}
-
 		try {
 			service.register(request);
-		} catch (DataIntegrityViolationException exception) {
-			log.warn("중복 회원가입 요청: {}", request.id());
-
+		} catch (DataIntegrityViolationException e) {
 			bindingResult.rejectValue("id", "duplicate.id", "이미 사용 중인 아이디입니다.");
-
 			return "member/signup";
-		}
 
+		}
 		return "redirect:/member/login";
 	}
 
@@ -70,9 +57,6 @@ public class MemberController {
 
 	@GetMapping("/check-id")
 	public ResponseEntity<Map<String, Object>> checkUsername(String id) {
-	
-	
-
 		if (id == null || !id.matches("^[a-zA-Z0-9_]{4,30}$")) {
 			return ResponseEntity.badRequest().body(
 					Map.of("valid", false, "isDuplicate", false, "message", "아이디는 영문, 숫자, 밑줄을 사용해 4~30자로 입력해주세요."));

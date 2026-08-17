@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 public class RateLimitFilter extends OncePerRequestFilter {
 
 	private final ApiRateLimiter rateLimiter;
+	private final ClientIdentityResolver clientIdentityResolver;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -30,9 +31,9 @@ public class RateLimitFilter extends OncePerRequestFilter {
 		}
 
 		String endpoint = resolveEndpoint(path);
-		String clientIp = rateLimiter.getClientIp(request);
 
-		// 1. IP 전용 버킷
+		// 모든 제한 대상 요청에 IP 버킷을 적용한다.
+		String clientIp = clientIdentityResolver.getClientIp(request);
 		ConsumptionProbe ipProbe = rateLimiter.tryConsumeIp(clientIp, endpoint);
 
 		if (!ipProbe.isConsumed()) {
@@ -40,33 +41,42 @@ public class RateLimitFilter extends OncePerRequestFilter {
 			return;
 		}
 
-		// 2. IP + 세션 + 엔드포인트 버킷
-		String clientKey = rateLimiter.createClientKey(request, endpoint);
+		// 인증 전 민감 엔드포인트에는 세션 버킷을 추가로 적용한다.
+		if (requiresSessionLimit(endpoint)) {
+			String clientKey = clientIdentityResolver.createClientKey(request, endpoint);
+			ConsumptionProbe sessionProbe = rateLimiter.tryConsumeSession(clientKey, endpoint);
 
-		ConsumptionProbe sessionProbe = rateLimiter.tryConsumeSession(clientKey, endpoint);
-
-		if (!sessionProbe.isConsumed()) {
-			writeTooManyRequests(response, sessionProbe);
-			return;
-		}
-
-		// 3. 서버 전체 엔드포인트 버킷
-		ConsumptionProbe globalProbe = rateLimiter.tryConsumeGlobal(endpoint);
-
-		if (!globalProbe.isConsumed()) {
-			writeTooManyRequests(response, globalProbe);
-			return;
+			if (!sessionProbe.isConsumed()) {
+				writeTooManyRequests(response, sessionProbe);
+				return;
+			}
 		}
 
 		filterChain.doFilter(request, response);
 	}
 
 	private boolean isRateLimitedPath(String path) {
-		return path.startsWith("/member") || path.startsWith("/api");
+		return path.equals("/member") || path.startsWith("/member/") || path.equals("/api") || path.startsWith("/api/");
 	}
 
 	private String resolveEndpoint(String path) {
-		return "/member/check-id".equals(path) ? "check-id" : "general";
+		if ("/member/check-id".equals(path)) {
+			return "check-id";
+		}
+
+		if ("/member/login".equals(path)) {
+			return "login";
+		}
+
+		if ("/member/signup".equals(path)) {
+			return "signup";
+		}
+
+		return "general";
+	}
+
+	private boolean requiresSessionLimit(String endpoint) {
+		return "check-id".equals(endpoint) || "login".equals(endpoint) || "signup".equals(endpoint);
 	}
 
 	private void writeTooManyRequests(HttpServletResponse response, ConsumptionProbe probe) throws IOException {

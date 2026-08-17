@@ -2,7 +2,6 @@ package com.example.demo.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
@@ -26,17 +25,6 @@ public class MemberMapperTest {
     
     private static final Logger log = LogManager.getLogger(MemberMapperTest.class);
 
-    @Test
-    void selectAllTest() {
-        List<MemberDto> list = memberMapper.selectAll();
-        log.info("조회된 데이터 개수: {}", list.size());
-
-        for (MemberDto member : list) {
-	        	log.info("member: number={}, id={}, userName={}, email={}, role={}",
-	        			member.getNumber(), member.getId(), member.getUserName(), member.getEmail(), member.getRole());
-        }
-    }
-    
     @Test
     void findByIdTest() {
     	String id = "addda";

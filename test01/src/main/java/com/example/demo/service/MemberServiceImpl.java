@@ -29,7 +29,11 @@ public class MemberServiceImpl implements MemberService {
 		member.setUserName(request.userName());
 		member.setEmail(request.email());
 
-		memberMapper.insertMember(member);
+		int affectedRows = memberMapper.insertMember(member);
+
+		if (affectedRows != 1) {
+		    throw new IllegalStateException("회원 등록에 실패했습니다.");
+		}
 	}
 
 	@Override
@@ -44,12 +48,20 @@ public class MemberServiceImpl implements MemberService {
 		member.setUserName(request.userName());
 		member.setEmail(request.email());
 
-		memberMapper.updateMember(member);
+		int affectedRows = memberMapper.updateMember(member);
+
+		if (affectedRows != 1) {
+		    throw new IllegalArgumentException("수정할 회원을 찾을 수 없습니다.");
+		}
 	}
 
 	@Override
 	public void deleteMember(String id) {
-		memberMapper.deleteMember(id);
+		int affectedRows = memberMapper.deleteMember(id);
+
+		if (affectedRows != 1) {
+		    throw new IllegalArgumentException("삭제할 회원을 찾을 수 없습니다.");
+		}
 	}
 
 	@Override

@@ -8,6 +8,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 import com.example.demo.ratelimit.ApiRateLimiter;
+import com.example.demo.ratelimit.ClientIdentityResolver;
 import com.example.demo.ratelimit.RateLimitFilter;
 
 import jakarta.servlet.DispatcherType;
@@ -20,12 +21,14 @@ public class SecurityConfig {
 	private final CustomAuthenticationFailureHandler failureHandler;
 	private final CustomLoginSuccessHandler successHandler;
 	private final ApiRateLimiter apiRateLimiter;
+	private final ClientIdentityResolver clientIdentityResolver;
 	
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
         	// 최전방(UsernamePasswordAuthenticationFilter 직전)에 속도 제한 필터 배치
-        	.addFilterBefore(new RateLimitFilter(apiRateLimiter), UsernamePasswordAuthenticationFilter.class)
+        	.addFilterBefore(new RateLimitFilter(apiRateLimiter,clientIdentityResolver), 
+        			UsernamePasswordAuthenticationFilter.class)
         	
         	.headers(headers -> headers
         		    .contentSecurityPolicy(csp -> csp
@@ -92,9 +95,7 @@ public class SecurityConfig {
 
         return http.build();
     }
-    
-    
-    
+        
     @Bean
 	 HttpSessionEventPublisher httpSessionEventPublisher() {
 		 return new HttpSessionEventPublisher();

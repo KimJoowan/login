@@ -25,14 +25,6 @@ public class RateLimitBucketFactory {
         return createBucket(60, 20);
     }
 
-    public Bucket createGlobalBucket(String endpoint) {
-        if ("check-id".equals(endpoint)) {
-            return createBucket(100, 100);
-        }
-
-        return createBucket(1_000, 1_000);
-    }
-
     private Bucket createBucket(long capacity, long refillPerMinute) {
 
         return Bucket.builder()

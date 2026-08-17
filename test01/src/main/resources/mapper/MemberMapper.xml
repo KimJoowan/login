@@ -4,14 +4,6 @@
 
 <mapper namespace="com.example.demo.mapper.MemberMapper">
 
-	<select id="selectAll"
-		resultType="com.example.demo.domain.MemberDto">
-		SELECT
-		id, "userName"
-		FROM
-		public.testbase
-	</select>
-
 	<select id="findById" parameterType="String"
 		resultType="com.example.demo.domain.MemberDto">
 		SELECT
@@ -42,17 +34,6 @@
 		email
 		= #{email}
 		WHERE id = #{id}
-	</update>
-
-	<update id="updatePassword"
-		parameterType="com.example.demo.domain.MemberDto">
-		UPDATE
-		public.testbase
-		SET
-		"password" = #{password}
-		WHERE
-		id
-		= #{id}
 	</update>
 
 	<!-- 회원탈퇴 -->

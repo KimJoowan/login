@@ -13,5 +13,7 @@ public interface MemberMapper {
     int deleteMember(String id);
     
     int updateMember(MemberDto Dto);
+    
+    int existsById(String id);
 
 }

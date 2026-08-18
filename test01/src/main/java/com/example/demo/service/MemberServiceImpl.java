@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
-
 	private final PasswordEncoder passwordEncoder;
 
 	private final MemberMapper memberMapper;
@@ -39,6 +38,11 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public MemberDto findById(String id) {
 		return memberMapper.findById(id);
+	}
+	
+	@Override
+	public boolean existsById(String id) {
+		return memberMapper.existsById(id) == 0 ? false : true;
 	}
 
 	@Override

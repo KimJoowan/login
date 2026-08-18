@@ -17,7 +17,11 @@ public class ClientIdentityResolver {
 	public String createClientKey(HttpServletRequest request, String endpoint) {
 		String clientIp = getClientIp(request);
 		HttpSession session = request.getSession(false);
-		String sessionId = session != null ? session.getId() : "anonymous";
+		String sessionId = "anonymous";
+
+		if(session != null) {
+			sessionId = session.getId();
+		}
 
 		return endpoint + ":" + clientIp + ":" + sessionId;
 	}

@@ -20,14 +20,12 @@ public class ApiRateLimiter {
 	private final Cache<String, Bucket> cache = Caffeine.newBuilder().maximumSize(100_000).expireAfterAccess(30, TimeUnit.MINUTES).build();
 
 	public ConsumptionProbe tryConsumeSession(String clientKey, String endpoint) {
-
 		Bucket bucket = cache.get("session:" + clientKey, ignored -> bucketFactory.createSessionBucket(endpoint));
 
 		return consume(bucket);
 	}
 
 	public ConsumptionProbe tryConsumeIp(String clientIp, String endpoint) {
-
 		String key = "ip:" + endpoint + ":" + clientIp;
 
 		Bucket bucket = cache.get(key, ignored -> bucketFactory.createIpBucket(endpoint));

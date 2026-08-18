@@ -55,6 +55,16 @@ public class MemberServiceTest {
 	}
 	
 	@Test
+	public void existsById() {
+		log.info("==============================================================================================");
+		log.info(service.existsById("zz"));
+		log.info("==============================================================================================");
+	}
+	
+	
+	
+	
+	@Test
 	public void delete() {
 		String id = "zz";
 		service.deleteMember(id);

@@ -13,6 +13,18 @@
 		WHERE
 		id = #{id}
 	</select>
+	
+	<select id="existsById" parameterType="String" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM
+			public.testbase
+		WHERE
+			id = #{id}
+	</select>
+	
+	
+	
 
 	<!-- 회원가입 -->
 	<insert id="insertMember"

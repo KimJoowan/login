@@ -4,7 +4,8 @@ import java.util.Map;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -34,7 +35,6 @@ public class MemberController {
 	@GetMapping("/signup")
 	public String register(Model model) {
 		model.addAttribute("signupRequest", new SignupRequest("", "", "", ""));
-
 		return "member/signup";
 	}
 
@@ -49,8 +49,8 @@ public class MemberController {
 		} catch (DataIntegrityViolationException e) {
 			bindingResult.rejectValue("id", "duplicate.id", "이미 사용 중인 아이디입니다.");
 			return "member/signup";
-
 		}
+		
 		return "redirect:/member/login";
 	}
 
@@ -63,32 +63,40 @@ public class MemberController {
 	public ResponseEntity<Map<String, Object>> checkUsername(String id) {
 		if (id == null || !id.matches("^[a-zA-Z0-9_]{4,30}$")) {
 			return ResponseEntity.badRequest().body(
-					Map.of("valid", false, "isDuplicate", false, "message", "아이디는 영문, 숫자, 밑줄을 사용해 4~30자로 입력해주세요."));
+					Map.of("valid", false, "isDuplicate", false, "message", "아이디는 영문, 숫자, 밑줄을 사용해 4~30자로 입력해주세요.")
+			);
 		}
 
-		boolean duplicate = service.findById(id) != null;
-
-		return ResponseEntity.ok(Map.of("valid", true, "isDuplicate", duplicate, "message",
-				duplicate ? "이미 사용 중인 아이디입니다." : "사용 가능한 아이디입니다."));
+		boolean duplicate = service.existsById(id);
+		String message = duplicate ? "사용 가능한 아이디입니다." : "이미 사용 중인 아이디입니다.";
+		
+		return ResponseEntity.ok(Map.of(
+			    "valid", true,
+			    "isDuplicate", duplicate,
+			    "message", message
+			));
 	}
 
 	@GetMapping("/info")
-	public String name(Authentication authentication, Model model) {
-		String id = authentication.getName();
-		MemberDto member = service.findById(id);
+	public String name(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+	    if (userDetails == null) {
+	        return "redirect:/member/login";
+	    }
+	    String id = userDetails.getUsername();
+	    MemberDto member = service.findById(id);
 
-		model.addAttribute("id", id);
-		model.addAttribute("memberUpdateRequest", new MemberUpdateRequest(member.getUserName(), member.getEmail()));
+	    model.addAttribute("id", id);
+	    model.addAttribute("memberUpdateRequest", new MemberUpdateRequest(member.getUserName(), member.getEmail()));
 
-		return "member/info";
+	    return "member/info";
 	}
 
 	@PostMapping("/update")
-	public String update(Authentication authentication,
+	public String update(@AuthenticationPrincipal UserDetails userDetails,
 			@Valid @ModelAttribute("memberUpdateRequest") MemberUpdateRequest request, BindingResult bindingResult,
 			Model model) {
 
-		String id = authentication.getName();
+		String id = userDetails.getUsername();
 
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("id", id);
@@ -100,9 +108,10 @@ public class MemberController {
 	}
 
 	@PostMapping("/delete")
-	public String delete(Authentication authentication, HttpServletRequest request) {
-		String id = authentication.getName();
+	public String delete(@AuthenticationPrincipal UserDetails userDetails, HttpServletRequest request) {
+		String id = userDetails.getUsername();
 		service.deleteMember(id);
+		
 		request.getSession().invalidate();
 
 		return "redirect:/";

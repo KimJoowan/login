@@ -52,16 +52,16 @@ public class SecurityConfig {
                     DispatcherType.ERROR
                 ).permitAll()
                 .requestMatchers(
-                    "/", 
-                    "/member/login", 
-                    "/member/signup", 
-                    "/member/check-id", 
-                    "/css/**", 
-                    "/js/**", 
-                    "/images/**", 
-                    "/fonts/**",
-                    "/error",
-                    "/.well-known/appspecific/com.chrome.devtools.json"
+                        "/", 
+                        "/member/login", 
+                        "/member/signup", 
+                        "/member/check-id", 
+                        "/css/**", 
+                        "/js/**", 
+                        "/images/**", 
+                        "/fonts/**",
+                        "/error",
+                        "/.well-known/appspecific/com.chrome.devtools.json"
                 ).permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
@@ -82,7 +82,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session
             		.sessionFixation(fixation -> fixation.changeSessionId())
                     .maximumSessions(1) // 최대 허용 세션 수
-                    .maxSessionsPreventsLogin(true)
+                    .maxSessionsPreventsLogin(false)
                     .expiredUrl("/") // 세션이 만료되었을 때 이동할 페이지
              )
             

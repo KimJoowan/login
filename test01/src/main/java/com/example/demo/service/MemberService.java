@@ -16,6 +16,8 @@ public interface MemberService {
 	void increaseLoginFailCountById(String id);
 
 	void recordSuccess(String id);
+
+	boolean existsById(String id);
 	
 	
 

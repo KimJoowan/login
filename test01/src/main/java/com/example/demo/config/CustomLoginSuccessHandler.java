@@ -19,11 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
 	private final MemberService memberService;
-	
-	private final SavedRequestAwareAuthenticationSuccessHandler redirectHandler =
-            new SavedRequestAwareAuthenticationSuccessHandler();
-
-
+	private final SavedRequestAwareAuthenticationSuccessHandler redirectHandler = new SavedRequestAwareAuthenticationSuccessHandler();
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -33,13 +29,8 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 		String id = authentication.getName();
 		memberService.recordSuccess(id);
 
-
 		redirectHandler.setDefaultTargetUrl("/");
-        redirectHandler.onAuthenticationSuccess(
-                request,
-                response,
-                authentication
-        );
+		redirectHandler.onAuthenticationSuccess(request, response, authentication);
 	}
 
 }

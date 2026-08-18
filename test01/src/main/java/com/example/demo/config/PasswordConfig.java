@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-public class PasswordConfig {
+public class PasswordConfig { 
 
 	@Value("${myapp.security.pepper}")
 	private String pepper;
@@ -36,8 +36,14 @@ public class PasswordConfig {
 
 			@Override
 			public boolean matches(CharSequence rawPassword, String encodedPassword) {
-				return delegate.matches(rawPassword + pepper, encodedPassword);
+				return delegate.matches(applyPepper(rawPassword), encodedPassword);
 			}
+			
+			private CharSequence applyPepper(CharSequence rawPassword) {
+	            StringBuilder sb = new StringBuilder(rawPassword.length() + pepper.length());
+	            sb.append(rawPassword).append(pepper);
+	            return sb;
+	        }
 		};
 	}
 }

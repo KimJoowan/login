@@ -1,1 +1,22 @@
 
+-- Table: public.account_lock
+
+-- DROP TABLE IF EXISTS public.account_lock;
+
+CREATE TABLE IF NOT EXISTS public.account_lock
+(
+    "number" bigint NOT NULL,
+    fail_count bigint NOT NULL DEFAULT 0,
+    active boolean,
+    locked_until timestamp without time zone,
+    CONSTRAINT account_lock_pkey PRIMARY KEY ("number"),
+    CONSTRAINT fk_account_lock_testbase FOREIGN KEY ("number")
+        REFERENCES public.testbase ("number") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.account_lock
+    OWNER to postgres;

@@ -1,0 +1,32 @@
+
+-- Table: public.testbase
+
+-- DROP TABLE IF EXISTS public.testbase;
+
+CREATE TABLE IF NOT EXISTS public.testbase
+(
+    "number" bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    "userName" character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    email character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    created_at timestamp with time zone DEFAULT now(),
+    password character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    id character varying(50) COLLATE pg_catalog."default",
+    role character varying(20) COLLATE pg_catalog."default" DEFAULT 'USER'::character varying,
+    CONSTRAINT testbase_pkey PRIMARY KEY ("number"),
+    CONSTRAINT uk_testbase_id UNIQUE (id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.testbase
+    OWNER to postgres;
+
+-- Trigger: trg_testbase_account_lock
+
+-- DROP TRIGGER IF EXISTS trg_testbase_account_lock ON public.testbase;
+
+CREATE OR REPLACE TRIGGER trg_testbase_account_lock
+    AFTER INSERT OR UPDATE 
+    ON public.testbase
+    FOR EACH ROW
+    EXECUTE FUNCTION public.fn_manage_account_lock();

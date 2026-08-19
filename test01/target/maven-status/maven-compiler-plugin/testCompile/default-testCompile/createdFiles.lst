@@ -1,0 +1,5 @@
+com\example\demo\mapper\MemberMapperTest.class
+com\example\demo\service\MemberServiceImplTest.class
+com\example\demo\mapper\AccountLockMapperTest.class
+com\example\demo\service\MemberServiceTest.class
+com\example\demo\ConnectionTest\Test01ApplicationTests.class

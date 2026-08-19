@@ -1,36 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.demo.mapper.AccountLockMapper">
-	<update id="increaseLoginFailCount" parameterType="int">
-    UPDATE public.account_lock
-    SET
-        fail_count = fail_count + 1,
-        active = CASE
-            WHEN fail_count + 1 >= 5 THEN false
-            ELSE active
-        END
-    WHERE number = #{number}
-    AND active = true
-</update>
-    
-    <select id="findById" parameterType="int" resultType="boolean">
-        SELECT 
-        	active
-        FROM 
-        	public.account_lock
-        WHERE 
-        	number = #{number}
-    </select>
+	<update id="increaseLoginFailCountById">
+		UPDATE account_lock al
+		SET fail_count = al.fail_count + 1,
+		locked_until = CASE
+		WHEN al.fail_count + 1 >= 5
+		THEN CURRENT_TIMESTAMP + INTERVAL '15 minutes'
+		ELSE al.locked_until
+		END
+		FROM testbase m
+		WHERE al.number = m.number
+		AND m.id = #{id}
+	</update>
 
-	<update id="recordSuccess" parameterType="int">
-    	UPDATE 
-    		public.account_lock
-    	SET
-        	fail_Count  = 0,
-        	active = true
-    	WHERE 
-    		number = #{number}
-    </update>
+	<select id="findById" parameterType="int" resultType="boolean">
+		SELECT
+		active
+		FROM
+		public.account_lock
+		WHERE
+		number = #{number}
+	</select>
+
+	<update id="recordSuccess">
+		UPDATE account_lock al
+		SET fail_count = 0,
+		locked_until = NULL
+
+		FROM testbase m
+		WHERE al.number = m.number
+		AND m.id = #{id}
+	</update>
+
+	<select id="isLoginAllowed" parameterType="int"
+		resultType="boolean">
+		SELECT
+		active = true
+		AND (
+		locked_until IS NULL
+		OR locked_until
+		&lt;= CURRENT_TIMESTAMP
+		)
+		FROM public.account_lock
+		WHERE number =
+		#{number}
+	</select>
 
 
 

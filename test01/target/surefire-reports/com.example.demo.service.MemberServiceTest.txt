@@ -1,0 +1,9 @@
+-------------------------------------------------------------------------------
+Test set: com.example.demo.service.MemberServiceTest
+-------------------------------------------------------------------------------
+Tests run: 13, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 1.391 s <<< FAILURE! -- in com.example.demo.service.MemberServiceTest
+com.example.demo.service.MemberServiceTest.delete -- Time elapsed: 0.015 s <<< ERROR!
+java.lang.IllegalArgumentException: 삭제할 회원을 찾을 수 없습니다.
+	at com.example.demo.service.MemberServiceImpl.deleteMember(MemberServiceImpl.java:67)
+	at com.example.demo.service.MemberServiceTest.delete(MemberServiceTest.java:70)
+

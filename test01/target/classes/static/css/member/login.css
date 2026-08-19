@@ -30,6 +30,17 @@
 			color: #333333;
 		}
 
+		.login-error {
+			margin-bottom: 20px;
+			padding: 12px 14px;
+			border: 1px solid #fecaca;
+			border-radius: 6px;
+			background-color: #fef2f2;
+			color: #b91c1c;
+			font-size: 14px;
+			line-height: 1.5;
+		}
+
 		.input-group {
 			margin-bottom: 20px;
 		}

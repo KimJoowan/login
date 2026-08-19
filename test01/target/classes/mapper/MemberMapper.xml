@@ -4,13 +4,6 @@
 
 <mapper namespace="com.example.demo.mapper.MemberMapper">
 
-	<select id="selectAll" resultType="com.example.demo.domain.MemberDto">
-		SELECT
-		id, userName
-		FROM
-		public.testbase
-	</select>
-
 	<select id="findById" parameterType="String"
 		resultType="com.example.demo.domain.MemberDto">
 		SELECT
@@ -20,14 +13,29 @@
 		WHERE
 		id = #{id}
 	</select>
+	
+	<select id="existsById" parameterType="String" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM
+			public.testbase
+		WHERE
+			id = #{id}
+	</select>
+	
+	
+	
 
 	<!-- 회원가입 -->
-	<insert id="insertMember" parameterType="com.example.demo.domain.MemberDto"
+	<insert id="insertMember"
+		parameterType="com.example.demo.domain.MemberDto"
 		useGeneratedKeys="true" keyProperty="number">
 		INSERT INTO public.testbase
-		(id, password, "userName", email)
+		(id,
+		password, "userName", email)
 		VALUES
-		(#{id}, #{password}, #{userName}, #{email})
+		(#{id}, #{password}, #{userName},
+		#{email})
 	</insert>
 
 	<update id="updateMember"
@@ -35,18 +43,9 @@
 		UPDATE public.testbase
 		SET
 		"userName" = #{userName},
-		email = #{email}
+		email
+		= #{email}
 		WHERE id = #{id}
-	</update>
-
-	<update id="updatePassword"
-		parameterType="com.example.demo.domain.MemberDto">
-		UPDATE
-		public.testbase
-		SET
-		"password" = #{password}
-		WHERE
-		id = #{id}
 	</update>
 
 	<!-- 회원탈퇴 -->

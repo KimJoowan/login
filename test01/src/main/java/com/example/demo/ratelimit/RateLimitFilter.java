@@ -2,6 +2,7 @@ package com.example.demo.ratelimit;
 
 import java.io.IOException;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -25,7 +26,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
 		String path = request.getServletPath();
 
-		if (!isRateLimitedPath(path)) {
+		if (!HttpMethod.POST.matches(request.getMethod()) || !isRateLimitedPath(path)) {
 			filterChain.doFilter(request, response);
 			return;
 		}

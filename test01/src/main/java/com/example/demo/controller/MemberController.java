@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,7 @@ import lombok.extern.log4j.Log4j2;
 public class MemberController {
 
 	private final MemberService service;
+	private static final Pattern ID_PATTERN = Pattern.compile("^[a-zA-Z0-9_]{4,30}$");
 
 	@GetMapping("/signup")
 	public String register(Model model) {
@@ -40,11 +42,11 @@ public class MemberController {
 
 	@PostMapping("/signup")
 	public String register(@Valid @ModelAttribute("signupRequest") SignupRequest request, BindingResult bindingResult) {		
-		if (bindingResult.hasErrors()) {
-		    return "member/signup";
-		}
-			
 		try {
+			if (bindingResult.hasErrors()) {
+			    return "member/signup";
+			}
+
 			service.register(request);
 		} catch (DataIntegrityViolationException e) {
 			bindingResult.rejectValue("id", "duplicate.id", "이미 사용 중인 아이디입니다.");
@@ -61,14 +63,14 @@ public class MemberController {
 
 	@GetMapping("/check-id")
 	public ResponseEntity<Map<String, Object>> checkUsername(String id) {
-		if (id == null || !id.matches("^[a-zA-Z0-9_]{4,30}$")) {
+		if (id == null || !ID_PATTERN.matcher(id).matches()) {
 			return ResponseEntity.badRequest().body(
 					Map.of("valid", false, "isDuplicate", false, "message", "아이디는 영문, 숫자, 밑줄을 사용해 4~30자로 입력해주세요.")
 			);
 		}
 
 		boolean duplicate = service.existsById(id);
-		String message = duplicate ? "사용 가능한 아이디입니다." : "이미 사용 중인 아이디입니다.";
+		String message = duplicate ? "이미 사용 중인 아이디입니다." : "사용 가능한 아이디입니다.";
 		
 		return ResponseEntity.ok(Map.of(
 			    "valid", true,

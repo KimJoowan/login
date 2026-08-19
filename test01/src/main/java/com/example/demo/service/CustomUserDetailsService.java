@@ -28,13 +28,14 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
         }
              
-        boolean loginAllowed = accountLockMapper.isLoginAllowed(member.getNumber());
+        Boolean loginAllowed = accountLockMapper.isLoginAllowed(member.getNumber());
 
         return User.builder()
                 .username(member.getId())
                 .password(member.getPassword())
                 .roles(member.getRole())
-                .accountLocked(!loginAllowed)
+                // 잠금 정보가 없거나 조회 결과가 null이면 안전하게 로그인을 차단한다.
+                .accountLocked(!Boolean.TRUE.equals(loginAllowed))
                 .build();
     }
 }

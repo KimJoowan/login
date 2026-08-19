@@ -6,9 +6,9 @@ import org.apache.ibatis.annotations.Mapper;
 public interface AccountLockMapper {
 	void increaseLoginFailCountById(String id);
 	
-	boolean findById(int num);
+	Boolean findById(int num);
 	
 	int recordSuccess(String id);
 	
-	boolean isLoginAllowed(int number);
+	Boolean isLoginAllowed(int number);
 }

@@ -9,13 +9,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
     let isUsernameChecked = false;
 
-    // 아이디 정규식 (영문 소문자, 숫자, 언더바(_), 하이픈(-), 4~20자)
+    // 아이디 정규식 (영문 소문자, 숫자, 언더바(_), 하이픈(-), 4~30
     const idRegex = /^[a-zA-Z0-9_]{4,30}$/;
 
     // 비밀번호 에러 메시지 초기화 함수
     function clearPasswordError() {
         passwordError.textContent = "";
-        passwordError.style.display = "none";
+        passwordError.hidden = true;
     }
 
     // 아이디가 바뀌면 중복확인을 다시 해야 함
@@ -101,7 +101,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!passwordInput.value.trim()) {
             event.preventDefault();
             passwordError.textContent = "비밀번호를 입력해주세요.";
-            passwordError.style.display = "block";
+            passwordError.hidden = false;
             passwordInput.focus();
             return;
         }
@@ -110,7 +110,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (passwordInput.value !== confirmPasswordInput.value) {
             event.preventDefault();
             passwordError.textContent = "비밀번호가 일치하지 않습니다.";
-            passwordError.style.display = "block";
+            passwordError.hidden = false;
             confirmPasswordInput.focus();
             return;
         }

@@ -42,7 +42,7 @@ public class MemberServiceImpl implements MemberService {
 	
 	@Override
 	public boolean existsById(String id) {
-		return memberMapper.existsById(id) == 0 ? false : true;
+		return memberMapper.existsById(id) > 0;
 	}
 
 	@Override

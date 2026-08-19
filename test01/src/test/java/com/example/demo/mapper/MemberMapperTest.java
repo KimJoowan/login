@@ -27,7 +27,7 @@ public class MemberMapperTest {
 
     @Test
     void findByIdTest() {
-    	String id = "addda";
+    	String id = "aaaaaaaa";
     	
     	MemberDto member = memberMapper.findById(id);
 	    	if (member == null) {

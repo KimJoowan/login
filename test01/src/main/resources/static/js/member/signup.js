@@ -32,7 +32,8 @@ document.addEventListener("DOMContentLoaded", function() {
     // 아이디 중복확인
     btnCheckUsername.addEventListener("click", async function() {
         const id = idInput.value.trim();
-
+		idInput.value = id;
+		
         if (!id) {
             usernameMsg.textContent = "아이디를 입력해주세요.";
             usernameMsg.className = "check-message error";
@@ -41,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         if (!idRegex.test(id)) {
-            usernameMsg.textContent = "아이디는 영문 소문자, 숫자, special문자(_,-) 4~20자여야 합니다.";
+            usernameMsg.textContent = "아이디는 영문 소문자, 숫자, special문자(_,-) 4~30자여야 합니다.";
             usernameMsg.className = "check-message error";
             idInput.focus();
             return;
@@ -50,15 +51,14 @@ document.addEventListener("DOMContentLoaded", function() {
         btnCheckUsername.disabled = true;
 
         try {
-            const requestUrl = "/member/check-id?id=" + encodeURIComponent(id);
-            const response = await fetch(requestUrl, {
-                method: "GET",
-                headers: {
-                    "Accept": "application/json"
-                }
-            });
+			const config = document.getElementById("signup-config");
+			const checkIdUrl = config.dataset.checkIdUrl;
 
-            const data = await response.json();
+			const response = await fetch(
+			    `${checkIdUrl}?id=${encodeURIComponent(id)}`
+			);
+
+			const data = await response.json();
 			
 			if (!response.ok) {
 			    usernameMsg.textContent =

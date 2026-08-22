@@ -2,6 +2,7 @@ package com.example.demo.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -10,11 +11,14 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 import com.example.demo.ratelimit.ApiRateLimiter;
 import com.example.demo.ratelimit.ClientIdentityResolver;
 import com.example.demo.ratelimit.RateLimitFilter;
+import com.example.demo.ratelimit.RateLimitPolicyResolver;
+import com.example.demo.ratelimit.RateLimitProperties;
 
 import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
+@EnableConfigurationProperties(RateLimitProperties.class)
 @RequiredArgsConstructor
 public class SecurityConfig {
 	
@@ -22,13 +26,17 @@ public class SecurityConfig {
 	private final CustomLoginSuccessHandler successHandler;
 	private final ApiRateLimiter apiRateLimiter;
 	private final ClientIdentityResolver clientIdentityResolver;
+	private final RateLimitPolicyResolver rateLimitPolicyResolver;
 	
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
         	// 최전방(UsernamePasswordAuthenticationFilter 직전)에 속도 제한 필터 배치
-        	.addFilterBefore(new RateLimitFilter(apiRateLimiter,clientIdentityResolver), 
-        			UsernamePasswordAuthenticationFilter.class)
+	        	.addFilterBefore(new RateLimitFilter(
+	        			apiRateLimiter,
+	        			clientIdentityResolver,
+	        			rateLimitPolicyResolver),
+	        			UsernamePasswordAuthenticationFilter.class)
         	
         	.headers(headers -> headers
         		    .contentSecurityPolicy(csp -> csp
@@ -101,3 +109,4 @@ public class SecurityConfig {
 		 return new HttpSessionEventPublisher();
 	}
 }
+

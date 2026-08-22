@@ -4,7 +4,6 @@
 <c:url var="checkIdUrl" value="/member/check-id" />
 <c:url var="signupUrl" value="/member/signup" />
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -27,6 +26,7 @@
 					<form:errors path="id" cssClass="error-message" />
 					<button type="button" id="btnCheckUsername" class="btn-check">중복 확인</button>
 				</div>
+				<div id="signup-config" data-check-id-url="<c:url value='/member/check-id'/>"></div>
 				<div id="usernameMsg" class="check-message"></div>
 			</div>
 			<div class="input-group">

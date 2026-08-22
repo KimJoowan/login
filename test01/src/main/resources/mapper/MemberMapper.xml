@@ -9,7 +9,7 @@
 		SELECT
 		"number", "id", password, "userName", email, role
 		FROM
-		public.testbase
+		public.member
 		WHERE
 		id = #{id}
 	</select>
@@ -18,19 +18,16 @@
 		SELECT
 			COUNT(*)
 		FROM
-			public.testbase
+			public.member
 		WHERE
 			id = #{id}
 	</select>
 	
-	
-	
-
 	<!-- 회원가입 -->
 	<insert id="insertMember"
 		parameterType="com.example.demo.domain.MemberDto"
 		useGeneratedKeys="true" keyProperty="number">
-		INSERT INTO public.testbase
+		INSERT INTO public.member
 		(id,
 		password, "userName", email)
 		VALUES
@@ -40,7 +37,7 @@
 
 	<update id="updateMember"
 		parameterType="com.example.demo.domain.MemberDto">
-		UPDATE public.testbase
+		UPDATE public.member
 		SET
 		"userName" = #{userName},
 		email
@@ -51,7 +48,7 @@
 	<!-- 회원탈퇴 -->
 	<delete id="deleteMember" parameterType="String">
 		DELETE FROM
-		public.testbase
+		public.member
 		WHERE
 		id = #{id}
 	</delete>

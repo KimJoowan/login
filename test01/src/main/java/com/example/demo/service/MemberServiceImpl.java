@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.domain.MemberDto;
 import com.example.demo.domain.MemberUpdateRequest;
@@ -69,7 +70,9 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
+	@Transactional
 	public void increaseLoginFailCountById(String id) {
+		accountLockMapper.resetIfExpired(id);
 		accountLockMapper.increaseLoginFailCountById(id);
 	}
 

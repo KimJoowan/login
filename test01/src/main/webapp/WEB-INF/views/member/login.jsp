@@ -14,9 +14,7 @@
 	<div class="login-container">
 		<h2>로그인</h2>
 		<c:if test="${param.error != null}">
-			<div class="login-error" role="alert">
-				아이디 또는 비밀번호를 확인해 주세요.
-			</div>
+			<div id="login-error" class="error-message" role="alert"></div>
 		</c:if>
 		<form id="loginForm" action="${pageContext.request.contextPath}/member/login" method="post">
 			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">

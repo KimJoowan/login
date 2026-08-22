@@ -1,31 +1,27 @@
 package com.example.demo.exception;
 
-import java.util.Map;
-
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import lombok.extern.log4j.Log4j2;
+import com.example.demo.controller.api.MemberApiController;
 
-@Log4j2
-@RestControllerAdvice
+import lombok.extern.slf4j.Slf4j;
+
+@RestControllerAdvice(assignableTypes = MemberApiController.class)
+@Slf4j
 public class ApiExceptionHandler {
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Map<String, Object>>
-            handleDataIntegrityViolation(
-                    DataIntegrityViolationException exception) {
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	public ProblemDetail handleDataIntegrityViolation(DataIntegrityViolationException exception) {
 
-        log.warn("데이터 무결성 위반", exception);
+		log.warn("API 데이터 충돌", exception);
 
-        return ResponseEntity
-            .status(HttpStatus.CONFLICT)
-            .body(Map.of(
-                "status", HttpStatus.CONFLICT.value(),
-                "message", "이미 존재하거나 처리할 수 없는 데이터입니다."
-            ));
-    }
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "이미 존재하거나 처리할 수 없는 데이터입니다.");
+		problem.setTitle("데이터 충돌");
+
+		return problem;
+	}
 }

@@ -1,6 +1,7 @@
 package com.example.demo.ratelimit;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,36 +19,25 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
 	private final ApiRateLimiter rateLimiter;
 	private final ClientIdentityResolver clientIdentityResolver;
+	private final RateLimitPolicyResolver policyResolver;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 
-		String path = request.getServletPath();
+		List<RateLimitPolicy> policies = policyResolver.resolve(request);
 
-		if (!isRateLimitedPath(path)) {
+		if (policies.isEmpty()) {
 			filterChain.doFilter(request, response);
 			return;
 		}
 
-		String endpoint = resolveEndpoint(path);
+		for (RateLimitPolicy policy : policies) {
+			String identity = resolveIdentity(request, policy.scope());
+			ConsumptionProbe probe = rateLimiter.tryConsume(policy, identity);
 
-		// 모든 제한 대상 요청에 IP 버킷을 적용한다.
-		String clientIp = clientIdentityResolver.getClientIp(request);
-		ConsumptionProbe ipProbe = rateLimiter.tryConsumeIp(clientIp, endpoint);
-
-		if (!ipProbe.isConsumed()) {
-			writeTooManyRequests(response, ipProbe);
-			return;
-		}
-
-		// 인증 전 민감 엔드포인트에는 세션 버킷을 추가로 적용한다.
-		if (requiresSessionLimit(endpoint)) {
-			String clientKey = clientIdentityResolver.createClientKey(request, endpoint);
-			ConsumptionProbe sessionProbe = rateLimiter.tryConsumeSession(clientKey, endpoint);
-
-			if (!sessionProbe.isConsumed()) {
-				writeTooManyRequests(response, sessionProbe);
+			if (!probe.isConsumed()) {
+				writeTooManyRequests(request, response, probe);
 				return;
 			}
 		}
@@ -55,41 +45,41 @@ public class RateLimitFilter extends OncePerRequestFilter {
 		filterChain.doFilter(request, response);
 	}
 
-	private boolean isRateLimitedPath(String path) {
-		return path.equals("/member") || path.startsWith("/member/") || path.equals("/api") || path.startsWith("/api/");
+	private String resolveIdentity(HttpServletRequest request, RateLimitPolicy.Scope scope) {
+		return switch (scope) {
+			case IP -> clientIdentityResolver.getClientIp(request);
+			case ACCOUNT -> clientIdentityResolver.getLoginAccountHash(request);
+		};
 	}
 
-	private String resolveEndpoint(String path) {
-		if ("/member/check-id".equals(path)) {
-			return "check-id";
-		}
-
-		if ("/member/login".equals(path)) {
-			return "login";
-		}
-
-		if ("/member/signup".equals(path)) {
-			return "signup";
-		}
-
-		return "general";
-	}
-
-	private boolean requiresSessionLimit(String endpoint) {
-		return "check-id".equals(endpoint) || "login".equals(endpoint) || "signup".equals(endpoint);
-	}
-
-	private void writeTooManyRequests(HttpServletResponse response, ConsumptionProbe probe) throws IOException {
+	private void writeTooManyRequests(
+			HttpServletRequest request,
+			HttpServletResponse response,
+			ConsumptionProbe probe) throws IOException {
 
 		long waitNanos = probe.getNanosToWaitForRefill();
 
 		long retryAfterSeconds = Math.max(1, (waitNanos + 999_999_999L) / 1_000_000_000L);
 
 		response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
-		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		response.setCharacterEncoding("UTF-8");
 		response.setHeader("Retry-After", String.valueOf(retryAfterSeconds));
 
-		response.getWriter().write("{\"error\":\"요청 횟수를 초과했습니다. " + "잠시 후 다시 시도해주세요.\"}");
+		String accept = request.getHeader("Accept");
+		if (accept != null && accept.contains(MediaType.TEXT_HTML_VALUE)) {
+			response.setContentType(MediaType.TEXT_HTML_VALUE);
+			response.getWriter().write("""
+					<!doctype html>
+					<html lang="ko"><head><meta charset="UTF-8"><title>요청 한도 초과</title></head>
+					<body><h1>요청 횟수를 초과했습니다.</h1><p>잠시 후 다시 시도해주세요.</p></body></html>
+					""");
+			return;
+		}
+
+		response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
+		response.getWriter().write("""
+				{"title":"요청 한도 초과","status":429,"detail":"잠시 후 다시 시도해주세요."}
+				""");
 	}
 }
+

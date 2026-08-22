@@ -2,75 +2,58 @@ package com.example.demo.service;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-import java.util.UUID;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.RepeatedTest;
-import org.junit.jupiter.api.RepetitionInfo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.domain.SignupRequest;
 
 @SpringBootTest
+@ActiveProfiles("test")
+@Transactional
 public class MemberServiceTest {
-	
+
 	private static final Logger log = LogManager.getLogger(MemberServiceTest.class);
-	
+
 	@Autowired
 	private MemberService service;
-	
-	@RepeatedTest(
-		    value = 10,
-		    name = "{displayName} - {currentRepetition}/{totalRepetitions}"
-		)
-		@DisplayName("회원가입 서비스 10회 반복 테스트")
-		void registerRepeatedTest(RepetitionInfo repetitionInfo) {
-		    int current = repetitionInfo.getCurrentRepetition();
+	String id = "aaaaaaaa";
 
-		    String uniqueValue = UUID.randomUUID()
-		            .toString()
-		            .replace("-", "")
-		            .substring(0, 12);
+	@Test
+	void registerSucceedsWithValidRequest(String id) {  
+	    String rawPassword = "password_";
+	    String userName = "test-user";
+	    String email = "test_" + "@test.com";
+	    
+	    SignupRequest request = new SignupRequest(id, rawPassword, userName, email);  
+	    assertThatCode(() -> service.register(request)).doesNotThrowAnyException();
+	}
 
-		    SignupRequest request = new SignupRequest(
-		        "zz_" + uniqueValue,
-		        UUID.randomUUID().toString().substring(0, 16),
-		        "tt_" + current,
-		        "test_" + uniqueValue + "@test.com"
-		    );
-
-		    assertThatCode(() -> service.register(request))
-		            .doesNotThrowAnyException();
-		}
-	
 	@Test
 	public void findById() {
+		registerSucceedsWithValidRequest(id);
 		log.info("==============================================================================================");
-		log.info(service.findById("zz"));
+		log.info(service.findById(id));
 		log.info("==============================================================================================");
 	}
-	
+
 	@Test
 	public void existsById() {
+		registerSucceedsWithValidRequest(id);
 		log.info("==============================================================================================");
-		log.info(service.existsById("zz"));
+		log.info(service.existsById("aaaaaaaa"));
 		log.info("==============================================================================================");
 	}
-	
-	
-	
-	
+
 	@Test
 	public void delete() {
-		String id = "zz";
+		registerSucceedsWithValidRequest(id);
+		String id = "aaaaaaaa";
 		service.deleteMember(id);
 	}
-	
 
-	
-	
 }

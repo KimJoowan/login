@@ -3,13 +3,16 @@
 <mapper namespace="com.example.demo.mapper.AccountLockMapper">
 	<update id="increaseLoginFailCountById">
 		UPDATE account_lock al
-		SET fail_count = al.fail_count + 1,
+		SET fail_count = al.fail_count
+		+ 1,
 		locked_until = CASE
 		WHEN al.fail_count + 1 >= 5
-		THEN CURRENT_TIMESTAMP + INTERVAL '15 minutes'
+		THEN
+		CURRENT_TIMESTAMP + INTERVAL '15 minutes'
 		ELSE al.locked_until
 		END
-		FROM testbase m
+		FROM
+		member m
 		WHERE al.number = m.number
 		AND m.id = #{id}
 	</update>
@@ -23,14 +26,27 @@
 		number = #{number}
 	</select>
 
+	<update id="resetIfExpired">
+		UPDATE account_lock al
+		SET fail_count = 0,
+		locked_until = NULL
+		FROM member m
+		WHERE al.number = m.number
+		AND m.id = #{id}
+		AND al.locked_until IS NOT NULL
+		AND al.locked_until &lt;= CURRENT_TIMESTAMP
+	</update>
+
+
 	<update id="recordSuccess">
 		UPDATE account_lock al
 		SET fail_count = 0,
 		locked_until = NULL
 
-		FROM testbase m
+		FROM member m
 		WHERE al.number = m.number
-		AND m.id = #{id}
+		AND m.id =
+		#{id}
 	</update>
 
 	<select id="isLoginAllowed" parameterType="int"

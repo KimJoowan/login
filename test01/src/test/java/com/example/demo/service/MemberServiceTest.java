@@ -8,34 +8,35 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
+import com.example.demo.Random.OptimizedRandom;
 import com.example.demo.domain.SignupRequest;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@Transactional
 public class MemberServiceTest {
 
 	private static final Logger log = LogManager.getLogger(MemberServiceTest.class);
 
 	@Autowired
 	private MemberService service;
-	String id = "aaaaaaaa";
-
+	
 	@Test
-	void registerSucceedsWithValidRequest(String id) {  
-	    String rawPassword = "password_";
+	void registerSucceedsWithValidRequest() {  
+		String id = "test_01";
+	    String rawPassword = OptimizedRandom.generate(128);
 	    String userName = "test-user";
-	    String email = "test_" + "@test.com";
+	    String email = "test_01" + "@test.com";
 	    
 	    SignupRequest request = new SignupRequest(id, rawPassword, userName, email);  
 	    assertThatCode(() -> service.register(request)).doesNotThrowAnyException();
 	}
-
+	
 	@Test
 	public void findById() {
-		registerSucceedsWithValidRequest(id);
+		registerSucceedsWithValidRequest();
+		
+		String id = "aaaaaaaa"; 
 		log.info("==============================================================================================");
 		log.info(service.findById(id));
 		log.info("==============================================================================================");
@@ -43,17 +44,22 @@ public class MemberServiceTest {
 
 	@Test
 	public void existsById() {
-		registerSucceedsWithValidRequest(id);
+		registerSucceedsWithValidRequest();
+		
+		String id = "aaaaaaaa";
 		log.info("==============================================================================================");
-		log.info(service.existsById("aaaaaaaa"));
+		log.info(service.existsById(id));
 		log.info("==============================================================================================");
 	}
 
 	@Test
 	public void delete() {
-		registerSucceedsWithValidRequest(id);
+		registerSucceedsWithValidRequest();
+		
 		String id = "aaaaaaaa";
+		log.info("==============================================================================================");
 		service.deleteMember(id);
+		log.info("==============================================================================================");
 	}
 
 }

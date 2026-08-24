@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS public.member
     email character varying(100) COLLATE pg_catalog."default" NOT NULL,
     created_at timestamp with time zone DEFAULT now(),
     password character varying(255) COLLATE pg_catalog."default" NOT NULL,
-    id character varying(50) COLLATE pg_catalog."default",
+    id character varying(50) COLLATE pg_catalog."default" NOT NULL,,
     role character varying(20) COLLATE pg_catalog."default" DEFAULT 'USER'::character varying,
     CONSTRAINT member_pkey PRIMARY KEY ("number"),
     CONSTRAINT uk_member_id UNIQUE (id)

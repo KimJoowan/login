@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS public.account_lock
 (
     "number" bigint NOT NULL,
     fail_count bigint NOT NULL DEFAULT 0,
-    active boolean,
+    active boolean NOT NULL DEFAULT true,
     locked_until timestamp without time zone,
     CONSTRAINT account_lock_pkey PRIMARY KEY ("number"),
     CONSTRAINT fk_account_lock_member FOREIGN KEY ("number")

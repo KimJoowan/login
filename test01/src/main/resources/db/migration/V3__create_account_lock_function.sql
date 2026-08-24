@@ -12,8 +12,8 @@ AS $BODY$
 BEGIN
     -- 1. 회원가입 시 (INSERT): 초기 계정 잠금 정보 등록
     IF (TG_OP = 'INSERT') THEN
-        INSERT INTO public.account_lock ("number", fail_count)
-        VALUES (NEW."number", 0);
+        INSERT INTO public.account_lock ("number")
+        VALUES (NEW."number");
         RETURN NEW;
 
     -- 2. 회원정보 수정 시 (UPDATE): 회원 탈퇴 처리 시 계정 비활성화

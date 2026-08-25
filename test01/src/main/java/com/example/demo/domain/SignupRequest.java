@@ -39,8 +39,8 @@ public record SignupRequest(
         message = "올바른 이메일 형식으로 입력해 주세요."
     )
     @Size(
-        max = 254,
-        message = "이메일은 254자 이하로 입력해 주세요."
+        max = 100,
+        message = "이메일은 100자 이하로 입력해 주세요."
     )
     String email
 ) {}

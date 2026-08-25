@@ -47,7 +47,7 @@
 			</div>
 			<div class="input-group">
 				<label for="email">이메일</label>
-				<form:input path="email" id="email" type="email" maxlength="254" />
+				<form:input path="email" id="email" type="email" maxlength="100" />
 				<form:errors path="email" cssClass="error-message" />
 			</div>
 			<div class="btn-group">
@@ -60,6 +60,7 @@
 			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
 			<button type="submit" class="btn-danger-outline">회원 탈퇴</button>
 		</form>
+		
 	</div>
 </body>
 </html>

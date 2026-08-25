@@ -16,7 +16,6 @@
 			background-color: #f4f6f8;
 		}
 
-		/* íìì ë³´ ì¹´ë */
 		.profile-container {
 			width: 100%;
 			max-width: 450px;
@@ -26,7 +25,6 @@
 			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 		}
 
-		/* íë¡í í¤ë */
 		.profile-header {
 			margin-bottom: 28px;
 			padding-bottom: 20px;
@@ -78,7 +76,6 @@
 			font-weight: 600;
 		}
 
-		/* ìë ¥ ìì­ */
 		.input-group {
 			margin-bottom: 20px;
 		}
@@ -115,7 +112,7 @@
 			cursor: not-allowed;
 		}
 
-		/* ë²í¼ ê·¸ë£¹ */
+
 		.btn-group {
 			display: flex;
 			gap: 10px;
@@ -157,7 +154,7 @@
 			background-color: #4338ca;
 		}
 
-		/* íì íí´ */
+		
 		.btn-danger-outline {
 			width: 100%;
 			margin-top: 16px;
@@ -180,7 +177,6 @@
 			background-color: #fef2f2;
 		}
 
-		/* ëª¨ë°ì¼ */
 		@media (max-width: 480px) {
 			.profile-container {
 				padding: 30px 20px;

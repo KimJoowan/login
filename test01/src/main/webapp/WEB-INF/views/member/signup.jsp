@@ -42,7 +42,7 @@
 				<form:errors path="userName" cssClass="error-message" />
 			</div>
 			<div class="input-group">
-				<label for="email">이메일</label> <input type="email" id="email" name="email" value="<c:out value='${signupRequest.email}'/>" maxlength="254" required>
+				<label for="email">이메일</label> <input type="email" id="email" name="email" value="<c:out value='${signupRequest.email}'/>" maxlength="100" required>
 				<form:errors path="email" cssClass="error-message" />
 			</div>
 			<button type="submit" class="btn-submit">가입하기</button>

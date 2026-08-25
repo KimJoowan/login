@@ -17,7 +17,7 @@
 		AND m.id = #{id}
 	</update>
 
-	<select id="findById" parameterType="int" resultType="boolean">
+	<select id="findById" parameterType="long" resultType="boolean">
 		SELECT
 		active
 		FROM
@@ -36,7 +36,6 @@
 		AND al.locked_until IS NOT NULL
 		AND al.locked_until &lt;= CURRENT_TIMESTAMP
 	</update>
-
 
 	<update id="recordSuccess">
 		UPDATE account_lock al

@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         if (!idRegex.test(id)) {
-            usernameMsg.textContent = "아이디는 영문 소문자, 숫자, special문자(_,-) 4~30자여야 합니다.";
+            usernameMsg.textContent = "아이디는 영문 소문자, 숫자, special문자(_) 4~30자여야 합니다.";
             usernameMsg.className = "check-message error";
             idInput.focus();
             return;

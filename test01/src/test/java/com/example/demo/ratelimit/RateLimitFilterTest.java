@@ -70,16 +70,20 @@ class RateLimitFilterTest {
     private RateLimitFilter createFilter(RateLimitProperties properties) {
         byte[] key = new byte[32];
         String encodedKey = Base64.getEncoder().encodeToString(key);
+
         ClientIdentityResolver identityResolver =
-                new ClientIdentityResolver(new RateLimitKeyHasher(encodedKey));
+                new ClientIdentityResolver(
+                        new RateLimitKeyHasher(encodedKey));
+
+        ApiRateLimiter rateLimiter = new ApiRateLimiter(new RateLimitBucketFactory());
 
         return new RateLimitFilter(
-                new ApiRateLimiter(new RateLimitBucketFactory()),
+                rateLimiter,
                 identityResolver,
                 new RateLimitPolicyResolver(properties)
         );
     }
-
+    
     private RateLimitProperties properties(long loginIpCapacity, long loginAccountCapacity) {
         return new RateLimitProperties(
                 new RateLimitProperties.Login(
@@ -125,4 +129,3 @@ class RateLimitFilterTest {
         return response;
     }
 }
-

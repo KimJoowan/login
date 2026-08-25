@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 public interface AccountLockMapper {
 	void increaseLoginFailCountById(String id);
 	
-	Boolean findById(int num);
+	Boolean findById(long num);
 	
 	int resetIfExpired(String id);
 	

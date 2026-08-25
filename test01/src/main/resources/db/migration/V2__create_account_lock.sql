@@ -1,3 +1,4 @@
+
 -- Table: public.account_lock
 
 -- DROP TABLE IF EXISTS public.account_lock;

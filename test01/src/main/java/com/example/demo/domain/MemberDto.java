@@ -5,7 +5,7 @@ import lombok.ToString;
 
 @Data
 public class MemberDto {
-	private int number;
+	private long number;
     private String id;
     private String userName;
     private String email;

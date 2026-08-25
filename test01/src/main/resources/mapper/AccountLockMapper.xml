@@ -49,7 +49,7 @@
 		#{id}
 	</update>
 
-	<select id="isLoginAllowed" parameterType="int"
+	<select id="isLoginAllowed" parameterType="long"
 		resultType="boolean">
 		SELECT
 		active = true

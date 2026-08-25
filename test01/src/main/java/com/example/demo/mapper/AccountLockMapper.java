@@ -12,5 +12,5 @@ public interface AccountLockMapper {
 	
 	int recordSuccess(String id);
 	
-	Boolean isLoginAllowed(int number);
+	Boolean isLoginAllowed(long number);
 }

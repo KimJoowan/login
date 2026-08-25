@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class AccountLockDto {
-	private int number;
+	private long number;
     private int failCount;
     private LocalDateTime lockedUntil;
     private boolean active = true;

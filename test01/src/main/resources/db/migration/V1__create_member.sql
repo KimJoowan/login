@@ -15,10 +15,3 @@ TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.member
     OWNER to postgres;
-
--- Trigger: trg_member_account_lock
-CREATE OR REPLACE TRIGGER trg_member_account_lock
-    AFTER INSERT OR UPDATE 
-    ON public.member
-    FOR EACH ROW
-    EXECUTE FUNCTION public.fn_manage_account_lock();

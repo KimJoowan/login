@@ -14,6 +14,7 @@ import com.example.demo.domain.SignupRequest;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@Transactional
 public class MemberServiceTest {
 
 	private static final Logger log = LogManager.getLogger(MemberServiceTest.class);

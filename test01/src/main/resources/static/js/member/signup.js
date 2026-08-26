@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     let isUsernameChecked = false;
 
-    // 아이디 정규식 (영문 소문자, 숫자, 언더바(_), 하이픈(-), 4~30
+    // 아이디 정규식 (영문 소문자, 숫자, 언더바(_), 4~30
     const idRegex = /^[a-zA-Z0-9_]{4,30}$/;
 
     // 비밀번호 에러 메시지 초기화 함수

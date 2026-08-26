@@ -100,7 +100,7 @@ public class MemberController {
 	@PostMapping("/delete")
 	public String delete(@AuthenticationPrincipal UserDetails userDetails, HttpServletRequest request) {
 		String id = userDetails.getUsername();
-		service.deleteMember(id);
+		service.withdrawMember(id);
 		
 		request.getSession().invalidate();
 

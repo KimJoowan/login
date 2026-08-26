@@ -10,15 +10,9 @@ public interface MemberService {
 	public MemberDto findById(String id);
 
 	void updateMember(String id, MemberUpdateRequest request);
-	
-	void deleteMember(String id);
-
-	void increaseLoginFailCountById(String id);
-
-	void recordSuccess(String id);
 
 	boolean existsById(String id);
-	
-	
+
+	void withdrawMember(String id);
 
 }

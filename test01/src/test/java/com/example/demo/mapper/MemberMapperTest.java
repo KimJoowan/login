@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 @SpringBootTest
 @RequiredArgsConstructor
 @ActiveProfiles("test")
-@Transactional
 public class MemberMapperTest {
 	
     @Autowired
@@ -29,7 +28,7 @@ public class MemberMapperTest {
 
     @Test
     void findByIdTest() {
-    	String id = "aaaaaaaa";
+    	String id = "bbbbbbbb";
     	
     	MemberDto member = memberMapper.findById(id);
 	    	if (member == null) {
@@ -77,6 +76,15 @@ public class MemberMapperTest {
     	
         memberMapper.updateMember(dto);
     }
+    
+    @Test
+    void withdrawMemberTest() {
+        String id = "bbbbbbbb";       
+        int result = memberMapper.withdrawMember(id);
+    }
+    
+    
+    
     
     
     

@@ -23,7 +23,7 @@ public class MemberServiceTest {
 	
 	@Test
 	void registerSucceedsWithValidRequest() {  
-		String id = "test_01";
+		String id = "bbbbbbbb";
 	    String rawPassword = OptimizedRandom.generate(128);
 	    String userName = "test-user";
 	    String email = "test_01" + "@test.com";
@@ -36,7 +36,7 @@ public class MemberServiceTest {
 	public void findById() {
 		registerSucceedsWithValidRequest();
 		
-		String id = "aaaaaaaa"; 
+		String id = "bbbbbbbb"; 
 		log.info("==============================================================================================");
 		log.info(service.findById(id));
 		log.info("==============================================================================================");
@@ -44,9 +44,9 @@ public class MemberServiceTest {
 
 	@Test
 	public void existsById() {
-		registerSucceedsWithValidRequest();
+		//registerSucceedsWithValidRequest();
 		
-		String id = "aaaaaaaa";
+		String id = "bbbbbbbb";
 		log.info("==============================================================================================");
 		log.info(service.existsById(id));
 		log.info("==============================================================================================");
@@ -58,7 +58,7 @@ public class MemberServiceTest {
 		
 		String id = "aaaaaaaa";
 		log.info("==============================================================================================");
-		service.deleteMember(id);
+		service.withdrawMember(id);
 		log.info("==============================================================================================");
 	}
 

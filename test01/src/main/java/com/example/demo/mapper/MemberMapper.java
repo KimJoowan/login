@@ -15,5 +15,7 @@ public interface MemberMapper {
     int updateMember(MemberDto Dto);
     
     int existsById(String id);
+    
+    int withdrawMember(String id);
 
 }

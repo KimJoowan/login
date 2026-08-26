@@ -2,7 +2,6 @@ package com.example.demo.service;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.domain.MemberDto;
 import com.example.demo.domain.MemberUpdateRequest;
@@ -61,24 +60,16 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public void deleteMember(String id) {
-		int affectedRows = memberMapper.deleteMember(id);
+	public void withdrawMember(String id) {
+		int affectedRows = memberMapper.withdrawMember(id);
 
 		if (affectedRows != 1) {
 		    throw new IllegalArgumentException("삭제할 회원을 찾을 수 없습니다.");
 		}
 	}
 
-	@Override
-	@Transactional
-	public void increaseLoginFailCountById(String id) {
-		accountLockMapper.resetIfExpired(id);
-		accountLockMapper.increaseLoginFailCountById(id);
-	}
-
-	@Override
-	public void recordSuccess(String id) {
-		accountLockMapper.recordSuccess(id);
-	}
-
 }
+
+	
+
+

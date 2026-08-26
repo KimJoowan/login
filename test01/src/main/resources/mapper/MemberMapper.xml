@@ -13,16 +13,16 @@
 		WHERE
 		id = #{id}
 	</select>
-	
+
 	<select id="existsById" parameterType="String" resultType="int">
 		SELECT
-			COUNT(*)
+		COUNT(*)
 		FROM
-			public.member
+		public.member
 		WHERE
-			id = #{id}
+		id = #{id}
 	</select>
-	
+
 	<!-- 회원가입 -->
 	<insert id="insertMember"
 		parameterType="com.example.demo.domain.MemberDto"
@@ -40,8 +40,7 @@
 		UPDATE public.member
 		SET
 		"userName" = #{userName},
-		email
-		= #{email}
+		email = #{email}
 		WHERE id = #{id}
 	</update>
 
@@ -52,5 +51,19 @@
 		WHERE
 		id = #{id}
 	</delete>
+
+	<update id="withdrawMember">
+		UPDATE account_lock al
+		SET active = false
+		FROM member m
+		WHERE al.number = m.number
+		AND m.id = #{id}
+		AND active = true
+	</update>
+
+
+
+
+
 
 </mapper>

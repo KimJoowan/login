@@ -7,7 +7,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 
-import com.example.demo.service.MemberService;
+import com.example.demo.service.LoginRecordService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,9 +20,8 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
-	private final MemberService memberService; // 회원 관련 로직을 처리하는 서비스 (가정)
+	private final LoginRecordService loginRecordService; // 회원 관련 로직을 처리하는 서비스 (가정)
 	
-
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException exception) throws IOException, ServletException {
@@ -32,11 +31,7 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
 		    String id = request.getParameter("id");
 
 		    if (id != null && !id.isBlank()) {
-		        try {
-		            memberService.increaseLoginFailCountById(id);
-		        } catch (RuntimeException e) {
-		            log.error("로그인 실패 횟수 기록에 실패했습니다. id={}", id, e);
-		        }
+		    	loginRecordService.recordLoginFailure(id);
 		    }
 		}
 

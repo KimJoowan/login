@@ -7,7 +7,7 @@
 	<select id="findById" parameterType="String"
 		resultType="com.example.demo.domain.MemberDto">
 		SELECT
-		"number", "id", password, "userName", email, role
+		*
 		FROM
 		public.member
 		WHERE
@@ -40,26 +40,22 @@
 		UPDATE public.member
 		SET
 		"userName" = #{userName},
-		email = #{email}
+		email =
+		#{email}
 		WHERE id = #{id}
 	</update>
 
 	<!-- 회원탈퇴 -->
-	<delete id="deleteMember" parameterType="String">
-		DELETE FROM
-		public.member
-		WHERE
-		id = #{id}
-	</delete>
 
 	<update id="withdrawMember">
-		UPDATE account_lock al
-		SET active = false
-		FROM member m
-		WHERE al.number = m.number
-		AND m.id = #{id}
-		AND active = true
-	</update>
+    UPDATE account_lock al
+    SET active = false
+    WHERE al.number = (
+        SELECT number
+        FROM member
+        WHERE id = #{id}
+    )
+</update>
 
 
 

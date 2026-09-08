@@ -20,9 +20,7 @@
 			<div class="input-group">
 				<label for="password">비밀번호</label> <input type="password" name="password" id="password" placeholder="비밀번호를 입력하세요" required>
 			</div>
-			<c:if test="${param.error != null}">
-				<div id="login-error" class="error-message" role="alert">아이디 또는 비밀번호가 올바르지 않습니다.</div>
-			</c:if>
+			<div id="login-error" class="error-message"><c:if test="${param.error != null}">아이디 또는 비밀번호가 올바르지 않습니다.</c:if></div>
 			<button type="submit" class="btn-submit">로그인</button>
 		</form>
 	</div>

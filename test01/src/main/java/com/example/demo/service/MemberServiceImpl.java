@@ -1,11 +1,16 @@
 package com.example.demo.service;
 
+import org.postgresql.util.PSQLException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.domain.MemberDto;
 import com.example.demo.domain.MemberUpdateRequest;
 import com.example.demo.domain.SignupRequest;
+import com.example.demo.exception.DuplicateEmailException;
+import com.example.demo.exception.DuplicateMemberIdException;
 import com.example.demo.mapper.AccountLockMapper;
 import com.example.demo.mapper.MemberMapper;
 
@@ -20,26 +25,61 @@ public class MemberServiceImpl implements MemberService {
 	private final AccountLockMapper accountLockMapper;
 
 	@Override
+	@Transactional
 	public void register(SignupRequest request) {
-		MemberDto member = new MemberDto();
+	    try {
+	        MemberDto member = new MemberDto();
 
-		member.setId(request.id());
-		member.setPassword(passwordEncoder.encode(request.password()));
-		member.setUserName(request.userName());
-		member.setEmail(request.email());
+	        member.setId(request.id());
+	        member.setPassword(passwordEncoder.encode(request.password()));
+	        member.setUserName(request.userName());
+	        member.setEmail(request.email());
 
-		int affectedRows = memberMapper.insertMember(member);
+	        int affectedRows = memberMapper.insertMember(member);
 
-		if (affectedRows != 1) {
-		    throw new IllegalStateException("회원 등록에 실패했습니다.");
-		}
+	        if (affectedRows != 1) {
+	            throw new IllegalStateException("회원 등록에 실패했습니다.");
+	        }
+
+	        int accountLockRows =
+	                accountLockMapper.insertAccountLock(member.getNumber());
+
+	        if (accountLockRows != 1) {
+	            throw new IllegalStateException(
+	                    "계정 잠금 정보 등록에 실패했습니다."
+	            );
+	        }
+
+	    } catch (DataIntegrityViolationException e) {
+
+	        Throwable cause = e.getMostSpecificCause();
+
+	        if (cause instanceof PSQLException psqlException
+	                && "23505".equals(psqlException.getSQLState())
+	                && psqlException.getServerErrorMessage() != null) {
+
+	            String constraint =
+	                    psqlException.getServerErrorMessage()
+	                                 .getConstraint();
+
+	            if ("uq_member_email".equals(constraint)) {
+	                throw new DuplicateEmailException();
+	            }
+
+	            if ("uk_member_id".equals(constraint)) {
+	            	throw new DuplicateMemberIdException();
+	            }
+	        }
+
+	        throw e;
+	    }
 	}
 
 	@Override
 	public MemberDto findById(String id) {
 		return memberMapper.findById(id);
 	}
-	
+
 	@Override
 	public boolean existsById(String id) {
 		return memberMapper.existsById(id) > 0;
@@ -55,7 +95,7 @@ public class MemberServiceImpl implements MemberService {
 		int affectedRows = memberMapper.updateMember(member);
 
 		if (affectedRows != 1) {
-		    throw new IllegalArgumentException("수정할 회원을 찾을 수 없습니다.");
+			throw new IllegalArgumentException("수정할 회원을 찾을 수 없습니다.");
 		}
 	}
 
@@ -64,12 +104,8 @@ public class MemberServiceImpl implements MemberService {
 		int affectedRows = memberMapper.withdrawMember(id);
 
 		if (affectedRows != 1) {
-		    throw new IllegalArgumentException("삭제할 회원을 찾을 수 없습니다.");
+			throw new IllegalArgumentException("삭제할 회원을 찾을 수 없습니다.");
 		}
 	}
 
 }
-
-	
-
-

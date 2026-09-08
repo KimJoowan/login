@@ -1,39 +1,48 @@
 package com.example.demo.ratelimit;
 
-import java.util.regex.Pattern;
-
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
-
 @Component
-@RequiredArgsConstructor
 public class ClientIdentityResolver {
 
-	private static final Pattern ID_PATTERN = Pattern.compile("^[a-zA-Z0-9_]{4,30}$");
-	private final RateLimitKeyHasher keyHasher;
+    private static final String UNKNOWN_IP = "unknown";
+    private static final String ID_PARAMETER = "id";
 
-	public String getClientIp(HttpServletRequest request) {
-		String remoteAddress = request.getRemoteAddr();
+    private final RateLimitKeyHasher keyHasher;
 
-		return remoteAddress != null && !remoteAddress.isBlank() ? remoteAddress : "unknown";
-	}
+    public ClientIdentityResolver(RateLimitKeyHasher keyHasher) {
+        this.keyHasher = keyHasher;
+    }
 
-	public String getLoginAccountHash(HttpServletRequest request) {
-		String normalizedId = normalizeId(request.getParameter("id"));
+    public String getClientIp(HttpServletRequest request) {
+        String remoteAddress = request.getRemoteAddr();
+        return remoteAddress != null && !remoteAddress.isBlank() ? remoteAddress : UNKNOWN_IP;
+    }
 
-		return keyHasher.hmacSha256(normalizedId);
-	}
+    public String getLoginAccountHash(HttpServletRequest request) {
+        String rawId = request.getParameter(ID_PARAMETER);
+        String normalizedId = rawId == null ? null : rawId.strip();
 
-	private String normalizeId(String rawId) {
-		if (rawId == null) {
-			return "missing";
-		}
+        String subject = (normalizedId != null && !normalizedId.isEmpty() && isValidId(normalizedId))
+                ? "id:" + normalizedId
+                : "no-id:" + getClientIp(request);
 
-		String normalizedId = rawId.strip();
+        return keyHasher.hmacSha256(subject);
+    }
 
-		return ID_PATTERN.matcher(normalizedId).matches() ? normalizedId : "invalid";
-	}
+    private static boolean isValidId(String id) {
+        int len = id.length();
+        if (len < 4 || len > 30) return false;
+        for (int i = 0; i < len; i++) {
+            char c = id.charAt(i);
+            if (!(c >= 'a' && c <= 'z' ||
+                  c >= 'A' && c <= 'Z' ||
+                  c >= '0' && c <= '9' ||
+                  c == '_')) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
-

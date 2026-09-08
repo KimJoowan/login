@@ -1,4 +1,4 @@
-package com.example.demo.config;
+ package com.example.demo.config;
 
 import java.io.IOException;
 
@@ -20,19 +20,24 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
-	private final LoginRecordService loginRecordService; // 회원 관련 로직을 처리하는 서비스 (가정)
-	
+	private final LoginRecordService loginRecordService; // 회원 관련 로직을 처리하는 서비스
+
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException exception) throws IOException, ServletException {
 
 		// 1. 로그인 폼에서 제출한 usernameParameter 값("id")을 가져옴
 		if (exception instanceof BadCredentialsException) {
-		    String id = request.getParameter("id");
+			String id = request.getParameter("id");
 
-		    if (id != null && !id.isBlank()) {
-		    	loginRecordService.recordLoginFailure(id);
-		    }
+			if (id != null && !id.isBlank()) {
+				try {
+					loginRecordService.recordFailure(id);
+				} catch (Exception e) {
+					log.error("로그인 실패 기록 오류 - id={}", id, e);
+				}
+
+			}
 		}
 
 		// 3. 기존 실패 페이지 및 에러 파라미터 유지를 위해 포워드 또는 리다이렉트 처리

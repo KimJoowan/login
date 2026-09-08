@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.mapper.AccountLockMapper;
 
@@ -22,14 +23,11 @@ public class LoginRecordService {
         }
     }
     
-    
-    public void recordLoginFailure(String id) {
-        try {
-        	accountLockMapper.resetIfExpired(id);
-    		accountLockMapper.increaseLoginFailCountById(id);
-        } catch (Exception e) {
-            log.error("로그인 성공 후 계정 잠금 초기화 실패 - id={}", id, e);
-        }
+   
+    @Transactional
+    public void recordFailure(String id) {
+        accountLockMapper.resetIfExpired(id);
+        accountLockMapper.increaseLoginFailCountById(id);
     }
     
     

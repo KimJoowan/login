@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 @SpringBootTest
 @RequiredArgsConstructor
 @ActiveProfiles("test")
+@Transactional
 public class MemberMapperTest {
 	
     @Autowired
@@ -58,14 +59,6 @@ public class MemberMapperTest {
         assertThat(result).isEqualTo(1);
     }
     
-    @Test
-    void deleteMemberTest() {
-        String id = "zz";
-        
-        int result = memberMapper.deleteMember(id);
-        log.info("회원탈퇴 결과: {}", result);
-    }
-    
     
     @Test
     void updateMemberTest() {   	  
@@ -81,6 +74,7 @@ public class MemberMapperTest {
     void withdrawMemberTest() {
         String id = "bbbbbbbb";       
         int result = memberMapper.withdrawMember(id);
+        log.info("회원탈퇴 결과: {}", result);
     }
     
     

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.Random.OptimizedRandom;
 import com.example.demo.domain.SignupRequest;
@@ -44,9 +45,7 @@ public class MemberServiceTest {
 	}
 
 	@Test
-	public void existsById() {
-		//registerSucceedsWithValidRequest();
-		
+	public void existsById() {	
 		String id = "bbbbbbbb";
 		log.info("==============================================================================================");
 		log.info(service.existsById(id));
@@ -57,7 +56,7 @@ public class MemberServiceTest {
 	public void delete() {
 		registerSucceedsWithValidRequest();
 		
-		String id = "aaaaaaaa";
+		String id = "bbbbbbbb";
 		log.info("==============================================================================================");
 		service.withdrawMember(id);
 		log.info("==============================================================================================");

@@ -85,6 +85,10 @@ body {
 	display: none;
 }
 
+.error-message[hidden] {
+    display: none;
+}
+
 .check-message.success {
 	color: #10b981;
 	display: block;

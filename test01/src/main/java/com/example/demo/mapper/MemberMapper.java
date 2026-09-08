@@ -9,8 +9,6 @@ public interface MemberMapper {
     MemberDto findById(String id);
     
     int insertMember(MemberDto member);
-
-    int deleteMember(String id);
     
     int updateMember(MemberDto Dto);
     

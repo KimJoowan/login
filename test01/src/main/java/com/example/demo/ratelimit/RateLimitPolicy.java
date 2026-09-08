@@ -8,30 +8,33 @@ public record RateLimitPolicy(
         Scope scope,
         long capacity,
         long refillTokens,
-        Duration refillPeriod
-) {
+        Duration refillPeriod,
+        ResponseFormat responseFormat) {
+
     public RateLimitPolicy {
         Objects.requireNonNull(name, "name");
         Objects.requireNonNull(scope, "scope");
         Objects.requireNonNull(refillPeriod, "refillPeriod");
+        Objects.requireNonNull(responseFormat, "responseFormat");
 
-        if (capacity < 1 || refillTokens < 1 || refillPeriod.isZero() || refillPeriod.isNegative()) {
-            throw new IllegalArgumentException("Rate Limit 값은 0보다 커야 합니다.");
+        if (name.isBlank()) {
+            throw new IllegalArgumentException("Policy name must not be blank");
         }
-    }
 
-    public String cacheKey(String identity) {
-        return scope.keyPrefix + ":" + name + ":v1:" + identity;
+        if (capacity < 1
+                || refillTokens < 1
+                || refillPeriod.isZero()
+                || refillPeriod.isNegative()) {
+            throw new IllegalArgumentException(
+                    "Rate Limit values must be positive");
+        }
     }
 
     public enum Scope {
-        IP("ip"),
-        ACCOUNT("account");
+        IP, ACCOUNT
+    }
 
-        private final String keyPrefix;
-
-        Scope(String keyPrefix) {
-            this.keyPrefix = keyPrefix;
-        }
+    public enum ResponseFormat {
+        HTML, JSON
     }
 }

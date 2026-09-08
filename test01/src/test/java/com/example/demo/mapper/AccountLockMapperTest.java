@@ -7,7 +7,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @SpringBootTest
 @ActiveProfiles("test")
 @RequiredArgsConstructor
@@ -19,8 +21,8 @@ public class AccountLockMapperTest {
    
     @Test
     void findById() {
-    	int num = 172;
-    	accountLockMapper.findById(num);
+    	int num = 41;
+    	log.info(accountLockMapper.findById(num));
     }
   
     @Test

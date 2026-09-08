@@ -1,32 +1,31 @@
 package com.example.demo.ratelimit;
 
-import java.time.Duration;
-
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import org.hibernate.validator.constraints.time.DurationMin;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import java.time.Duration;
 
 @Validated
 @ConfigurationProperties(prefix = "app.rate-limit")
 public record RateLimitProperties(
         @NotNull @Valid Login login,
-        @NotNull @Valid IpOnly signup,
-        @NotNull @Valid IpOnly checkId
-) {
-    public record Login(
-            @NotNull @Valid Limit ip,
-            @NotNull @Valid Limit account
-    ) {}
+        @NotNull @Valid IpLimit signup,
+        @NotNull @Valid IpLimit checkId,
+        @NotNull @Valid Cache cache) {
 
-    public record IpOnly(@NotNull @Valid Limit ip) {}
+    public record Login(@NotNull @Valid Limit ip,
+                        @NotNull @Valid Limit account) {}
 
-    public record Limit(
-            @Min(1) long capacity,
-            @Min(1) long refillTokens,
-            @NotNull Duration refillPeriod
-    ) {}
+    public record IpLimit(@NotNull @Valid Limit ip) {}
+
+    public record Limit(@Positive long capacity,
+                        @Positive long refillTokens,
+                        @NotNull @DurationMin(seconds = 1) Duration refillPeriod) {}
+
+    public record Cache(@Positive long maximumSize,
+                        @NotNull @DurationMin(seconds = 1) Duration expireAfterAccess) {}
 }
-

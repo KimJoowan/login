@@ -28,13 +28,15 @@ public class SecurityConfig {
 	private final ClientIdentityResolver clientIdentityResolver;
 	private final RateLimitPolicyResolver rateLimitPolicyResolver;
 	private final io.micrometer.core.instrument.MeterRegistry meterRegistry;
+	private final RateLimitResponseWriter rateLimitResponseWriter;
+
 
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
 				// 최전방(UsernamePasswordAuthenticationFilter 직전)에 속도 제한 필터 배치
 				.addFilterBefore(new RateLimitFilter(apiRateLimiter, clientIdentityResolver, rateLimitPolicyResolver,
-						meterRegistry), UsernamePasswordAuthenticationFilter.class)
+						meterRegistry, rateLimitResponseWriter), UsernamePasswordAuthenticationFilter.class)
 
 				.headers(headers -> headers.contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; "
 						+ "script-src 'self'; " + "style-src 'self'; " + "img-src 'self' data:; " + "font-src 'self'; "

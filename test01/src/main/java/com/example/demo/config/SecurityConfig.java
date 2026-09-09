@@ -8,10 +8,13 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
-import com.example.demo.ratelimit.ApiRateLimiter;
-import com.example.demo.ratelimit.ClientIdentityResolver;
+import com.example.demo.ratelimit.RateLimiter;
+
+import io.micrometer.core.instrument.MeterRegistry;
+
+import com.example.demo.ratelimit.IdentityResolver;
 import com.example.demo.ratelimit.RateLimitFilter;
-import com.example.demo.ratelimit.RateLimitPolicyResolver;
+import com.example.demo.ratelimit.PolicyResolver;
 import com.example.demo.ratelimit.RateLimitProperties;
 
 import jakarta.servlet.DispatcherType;
@@ -24,19 +27,16 @@ public class SecurityConfig {
 
 	private final CustomAuthenticationFailureHandler failureHandler;
 	private final CustomLoginSuccessHandler successHandler;
-	private final ApiRateLimiter apiRateLimiter;
-	private final ClientIdentityResolver clientIdentityResolver;
-	private final RateLimitPolicyResolver rateLimitPolicyResolver;
-	private final io.micrometer.core.instrument.MeterRegistry meterRegistry;
-	private final RateLimitResponseWriter rateLimitResponseWriter;
-
+	private final RateLimiter rateLimiter;
+	private final IdentityResolver identityResolver;
+	private final PolicyResolver policyResolver;
+	private final MeterRegistry meterRegistry;
 
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
 				// 최전방(UsernamePasswordAuthenticationFilter 직전)에 속도 제한 필터 배치
-				.addFilterBefore(new RateLimitFilter(apiRateLimiter, clientIdentityResolver, rateLimitPolicyResolver,
-						meterRegistry, rateLimitResponseWriter), UsernamePasswordAuthenticationFilter.class)
+				.addFilterBefore(new RateLimitFilter(rateLimiter, identityResolver, policyResolver, meterRegistry), UsernamePasswordAuthenticationFilter.class)
 
 				.headers(headers -> headers.contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; "
 						+ "script-src 'self'; " + "style-src 'self'; " + "img-src 'self' data:; " + "font-src 'self'; "

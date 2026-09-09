@@ -10,8 +10,8 @@
     "description": "A description for 'spring.thymeleaf.enabled'"
   },
   {
-    "name": "app.rate-limit.login.ip.capacity",
-    "type": "java.lang.String",
-    "description": "A description for 'app.rate-limit.login.ip.capacity'"
+    "name": "app.rate-limit.policies",
+    "type": "java.util.Map<java.lang.String,com.example.demo.ratelimit.RateLimitProperties$Rule>",
+    "description": "Rate limit policies keyed by policy name."
   }
 ]}

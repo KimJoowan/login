@@ -85,7 +85,6 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<scope>runtime</scope>
 		</dependency>
 
 		<!-- Spring Security 라이브러리 -->
@@ -110,8 +109,8 @@
 		<!-- Bucket4j 핵심 라이브러리 -->
 		<dependency>
 			<groupId>com.bucket4j</groupId>
-			<artifactId>bucket4j-core</artifactId>
-			<version>8.10.1</version>
+			<artifactId>bucket4j_jdk17-core</artifactId>
+			<version>8.19.0</version>
 		</dependency>
 
 		<!-- Caffeine 캐시 라이브러리 -->
@@ -133,6 +132,22 @@
 		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-database-postgresql</artifactId>
+		</dependency>
+
+		<!-- Micrometer 코어 (메트릭 API) -->
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-core</artifactId>
+		</dependency>
+
+		<!-- 실제로 지표를 노출/수집하려면 이 두 개도 필요 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
 		</dependency>
 
 

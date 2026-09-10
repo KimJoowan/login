@@ -10,8 +10,6 @@ public interface AccountLockMapper {
 	
 	Boolean findById(long num);
 	
-	int resetIfExpired(String id);
-	
 	int recordSuccess(String id);
 	
 	Boolean isLoginAllowed(long number);

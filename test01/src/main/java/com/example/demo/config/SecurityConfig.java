@@ -36,7 +36,8 @@ public class SecurityConfig {
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
 				// 최전방(UsernamePasswordAuthenticationFilter 직전)에 속도 제한 필터 배치
-				.addFilterBefore(new RateLimitFilter(rateLimiter, identityResolver, policyResolver, meterRegistry), UsernamePasswordAuthenticationFilter.class)
+				.addFilterBefore(new RateLimitFilter(rateLimiter, identityResolver, policyResolver, meterRegistry),
+						UsernamePasswordAuthenticationFilter.class)
 
 				.headers(headers -> headers.contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; "
 						+ "script-src 'self'; " + "style-src 'self'; " + "img-src 'self' data:; " + "font-src 'self'; "
@@ -59,10 +60,7 @@ public class SecurityConfig {
 
 				// 인증 성공 시 세션 ID 변경
 				.sessionManagement(
-						session -> session.sessionFixation(fixation -> fixation.changeSessionId()).maximumSessions(1) // 최대
-																														// 허용
-																														// 세션
-																														// 수
+						session -> session.sessionFixation(fixation -> fixation.changeSessionId()).maximumSessions(1)
 								.maxSessionsPreventsLogin(false).expiredUrl("/") // 세션이 만료되었을 때 이동할 페이지
 				)
 

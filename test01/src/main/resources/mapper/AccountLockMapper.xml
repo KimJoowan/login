@@ -31,17 +31,6 @@
 		number = #{number}
 	</select>
 
-	<update id="resetIfExpired">
-		UPDATE account_lock al
-		SET fail_count = 0,
-		locked_until = NULL
-		FROM member m
-		WHERE al.number = m.number
-		AND m.id = #{id}
-		AND al.locked_until IS NOT NULL
-		AND al.locked_until &lt;= CURRENT_TIMESTAMP
-	</update>
-
 	<update id="recordSuccess">
 		UPDATE account_lock al
 		SET fail_count = 0,
@@ -67,11 +56,5 @@
 		#{number}
 	</select>
 
-
-
-
-
-
 </mapper>
-
 

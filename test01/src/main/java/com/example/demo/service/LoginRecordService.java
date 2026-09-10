@@ -23,10 +23,8 @@ public class LoginRecordService {
         }
     }
     
-   
     @Transactional
     public void recordFailure(String id) {
-        accountLockMapper.resetIfExpired(id);
         accountLockMapper.increaseLoginFailCountById(id);
     }
     

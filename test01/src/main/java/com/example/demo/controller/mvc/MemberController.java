@@ -1,6 +1,5 @@
 package com.example.demo.controller.mvc;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -46,12 +45,13 @@ public class MemberController {
 
 		try {
 			service.register(request);
+
 		} catch (DuplicateMemberIdException e) {
-			bindingResult.rejectValue("id", "duplicate", "이미 사용 중인 아이디입니다.");
+			bindingResult.rejectValue("id", "duplicate", e.getMessage());
 			return "member/signup";
 
 		} catch (DuplicateEmailException e) {
-			bindingResult.rejectValue("email", "duplicate", "이미 사용 중인 이메일입니다.");
+			bindingResult.rejectValue("email", "duplicate", e.getMessage());
 			return "member/signup";
 		}
 
@@ -68,8 +68,9 @@ public class MemberController {
 		if (userDetails == null) {
 			return "redirect:/member/login";
 		}
+
 		String id = userDetails.getUsername();
-		MemberDto member = service.findById(id);
+		MemberDto member = service.findById(userDetails.getUsername());
 
 		model.addAttribute("id", id);
 		model.addAttribute("memberUpdateRequest", new MemberUpdateRequest(member.getUserName(), member.getEmail()));
@@ -79,18 +80,20 @@ public class MemberController {
 
 	@PostMapping("/update")
 	public String update(@AuthenticationPrincipal UserDetails userDetails,
-			@Valid @ModelAttribute MemberUpdateRequest request, BindingResult bindingResult, Model model) {
+			@Valid @ModelAttribute("memberUpdateRequest") MemberUpdateRequest request, BindingResult bindingResult,
+			Model model) {
+
+		String id = userDetails.getUsername();
+		model.addAttribute("id", id);
 
 		if (bindingResult.hasErrors()) {
-			model.addAttribute("id", userDetails.getUsername());
 			return "member/info";
 		}
 
 		try {
-			service.updateMember(userDetails.getUsername(), request);
-		} catch (DataIntegrityViolationException exception) {
-			bindingResult.rejectValue("email", "duplicate.email", "이미 사용 중인 이메일입니다.");
-			model.addAttribute("id", userDetails.getUsername());
+			service.updateMember(id, request);
+		} catch (DuplicateEmailException exception) {
+			bindingResult.rejectValue("email", "duplicate", exception.getMessage());
 			return "member/info";
 		}
 

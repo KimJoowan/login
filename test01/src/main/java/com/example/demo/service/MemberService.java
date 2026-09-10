@@ -9,10 +9,7 @@ public interface MemberService {
 
 	public MemberDto findById(String id);
 
-	void updateMember(String id, MemberUpdateRequest request);
-
-	boolean existsById(String id);
-
 	void withdrawMember(String id);
 
+	void updateMember(String id, MemberUpdateRequest request);
 }

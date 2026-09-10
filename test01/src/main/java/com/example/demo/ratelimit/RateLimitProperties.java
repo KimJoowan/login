@@ -20,27 +20,34 @@ import java.util.Set;
 @Validated
 @ConfigurationProperties(prefix = "app.rate-limit")
 public record RateLimitProperties(
-		@NotEmpty @Valid Map<String, Rule> policies,
-		@NotNull @Valid Cache cache) {
+        @NotEmpty Map<String, @Valid Rule> policies,
+        @NotNull @Valid Cache cache) {
 
-	/** 경로와 HTTP 메서드에 적용할 정책 그룹입니다. */
-	public record Rule(
-			@NotBlank @Pattern(regexp = "/.*") String path,
-			@NotEmpty Set<@NotBlank String> methods,
-			@NotNull RateLimitPolicy.ResponseFormat responseFormat,
-			@NotEmpty @Valid Map<RateLimitPolicy.Scope, Limit> limits) {
-	}
+    public record Rule(
+            @NotBlank
+            @Pattern(regexp = "/.*")
+            String path,
 
-	/** 버킷 용량과 토큰 충전 규칙입니다. */
-	public record Limit(
-			@Positive long capacity,
-			@Positive long refillTokens,
-			@NotNull @DurationMin(seconds = 1) Duration refillPeriod) {
-	}
+            @NotEmpty
+            Set<@NotBlank String> methods,
 
-	/** 버킷 캐시의 크기와 만료 설정입니다. */
-	public record Cache(
-			@Positive long maximumSize,
-			@NotNull @DurationMin(seconds = 1) Duration expireAfterAccess) {
-	}
+            @NotNull
+            RateLimitPolicy.ResponseFormat responseFormat,
+
+            @NotEmpty
+            Map<RateLimitPolicy.Scope, @Valid Limit> limits) {
+    }
+
+    public record Limit(
+            @Positive long capacity,
+            @Positive long refillTokens,
+            @NotNull @DurationMin(seconds = 1)
+            Duration refillPeriod) {
+    }
+
+    public record Cache(
+            @Positive long maximumSize,
+            @NotNull @DurationMin(seconds = 1)
+            Duration expireAfterAccess) {
+    }
 }

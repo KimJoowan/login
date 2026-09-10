@@ -35,27 +35,25 @@
 		#{email})
 	</insert>
 
-	<update id="updateMember"
-		parameterType="com.example.demo.domain.MemberDto">
+	<update id="updateMember">
 		UPDATE public.member
 		SET
-		"userName" = #{userName},
-		email =
-		#{email}
+		"userName" = #{request.userName},
+		email = #{request.email}
 		WHERE id = #{id}
 	</update>
 
 	<!-- 회원탈퇴 -->
 
 	<update id="withdrawMember">
-    UPDATE account_lock al
-    SET active = false
-    WHERE al.number = (
-        SELECT number
-        FROM member
-        WHERE id = #{id}
-    )
-</update>
+		UPDATE account_lock al
+		SET active = false
+		WHERE al.number = (
+		SELECT number
+		FROM member
+		WHERE id = #{id}
+		)
+	</update>
 
 
 

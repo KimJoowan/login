@@ -136,6 +136,8 @@ public class RateLimiter {
 
 	public static final class CapacityExceededException extends RuntimeException {
 
+		private static final long serialVersionUID = 1L;
+
 		/** 버킷 캐시가 최대 용량에 도달했을 때 발생합니다. */
 		public CapacityExceededException() {
 			super("Rate limit bucket storage is full");

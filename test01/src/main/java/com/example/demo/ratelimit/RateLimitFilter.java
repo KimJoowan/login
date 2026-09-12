@@ -73,7 +73,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
 			RateLimitPolicy.ResponseFormat format) throws IOException {
 
 		boolean json = format == RateLimitPolicy.ResponseFormat.JSON;
-		write(request, response, HttpServletResponse.SC_SERVICE_UNAVAILABLE, // ← 추가
+		write(request, response, HttpServletResponse.SC_SERVICE_UNAVAILABLE,
 				json ? MediaType.APPLICATION_PROBLEM_JSON_VALUE : MediaType.TEXT_HTML_VALUE, json ? """
 						{"title":"서비스 일시 사용 불가","status":503,"detail":"잠시 후 다시 시도해주세요."}
 						""" : """
@@ -99,7 +99,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
 			response.getWriter().write(body);
 	}
 
-	public void writeTooManyRequests(HttpServletRequest request, HttpServletResponse response,
+	private void writeTooManyRequests(HttpServletRequest request, HttpServletResponse response,
 			RateLimitPolicy.ResponseFormat format, long retryAfterSeconds) throws IOException {
 
 		response.setHeader(HttpHeaders.RETRY_AFTER, Long.toString(retryAfterSeconds));

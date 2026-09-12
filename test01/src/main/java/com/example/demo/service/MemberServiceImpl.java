@@ -14,7 +14,6 @@ import com.example.demo.domain.SignupRequest;
 import com.example.demo.exception.DuplicateEmailException;
 import com.example.demo.exception.DuplicateMemberIdException;
 import com.example.demo.exception.MemberNotFoundException;
-import com.example.demo.mapper.AccountLockMapper;
 import com.example.demo.mapper.MemberMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -25,53 +24,37 @@ public class MemberServiceImpl implements MemberService {
 	private final PasswordEncoder passwordEncoder;
 
 	private final MemberMapper memberMapper;
-	private final AccountLockMapper accountLockMapper;
-
+	
 	@Override
 	@Transactional
 	public void register(SignupRequest request) {
-		try {
+		try { 
 			MemberDto member = new MemberDto();
-
 			member.setId(request.id());
 			member.setPassword(passwordEncoder.encode(request.password()));
 			member.setUserName(request.userName());
 			member.setEmail(request.email());
-
-			int affectedRows = memberMapper.insertMember(member);
-
-			if (affectedRows != 1) {
-				throw new IllegalStateException("회원 등록에 실패했습니다.");
-			}
-
-			int accountLockRows = accountLockMapper.insertAccountLock(member.getNumber());
-
-			if (accountLockRows != 1) {
-				throw new IllegalStateException("계정 잠금 정보 등록에 실패했습니다.");
-			}
+			
+		    memberMapper.insertMember(member);
 
 		} catch (DataIntegrityViolationException e) {
-			Throwable cause = e.getMostSpecificCause();
 
-			if (cause instanceof PSQLException psqlException && psqlException.getServerErrorMessage() != null) {
+		    String constraint = extractConstraint(e);
 
-				String message = psqlException.getServerErrorMessage().getConstraint();
+		    if ("uk_member_id".equals(constraint)) {
+		        throw new DuplicateMemberIdException();
+		    }
 
-				if (message != null && message.contains("uk_member_id")) {
-					throw new DuplicateMemberIdException();
-				}
+		    if ("uq_member_email".equals(constraint)) {
+		        throw new DuplicateEmailException();
+		    }
 
-				if (message != null && message.contains("uq_member_email")) {
-					throw new DuplicateEmailException();
-				}
-			}
-
-			throw e;
+		    throw e;
 		}
 	}
-
+	
 	@Override
-	public MemberDto findById(String id) {
+	public MemberDto showMemberInfo(String id) {
 		return Optional.ofNullable(memberMapper.findById(id)).orElseThrow(MemberNotFoundException::new);
 	}
 
@@ -80,26 +63,22 @@ public class MemberServiceImpl implements MemberService {
 	public void updateMember(String id, MemberUpdateRequest request) {
 
 		try {
-			int affectedRows = memberMapper.updateMember(id, request);
+		    int affectedRows =
+		            memberMapper.updateMember(id, request);
 
-			if (affectedRows != 1) {
-				throw new MemberNotFoundException();
-			}
+		    if (affectedRows != 1) {
+		        throw new MemberNotFoundException();
+		    }
 
 		} catch (DataIntegrityViolationException e) {
 
-			Throwable cause = e.getMostSpecificCause();
+		    String constraint = extractConstraint(e);
 
-			if (cause instanceof PSQLException psqlException && psqlException.getServerErrorMessage() != null) {
-
-				String constraint = psqlException.getServerErrorMessage().getConstraint();
-
-				if ("uq_member_email".equals(constraint)) {
-					throw new DuplicateEmailException();
-				}
-			}
-
-			throw e;
+		    if ("uq_member_email".equals(constraint)) {
+		        throw new DuplicateEmailException();
+		    }
+		    
+		throw e;
 		}
 	}
 
@@ -108,8 +87,28 @@ public class MemberServiceImpl implements MemberService {
 		int affectedRows = memberMapper.withdrawMember(id);
 
 		if (affectedRows != 1) {
-			throw new IllegalArgumentException("삭제할 회원을 찾을 수 없습니다.");
+		    throw new MemberNotFoundException();
 		}
+	}
+	
+	private String extractConstraint(DataIntegrityViolationException exception) {
+
+	    Throwable cause = exception.getMostSpecificCause();
+
+	    if (cause instanceof PSQLException psqlException
+	            && psqlException.getServerErrorMessage() != null) {
+
+	        return psqlException
+	                .getServerErrorMessage()
+	                .getConstraint();
+	    }
+ 
+	    return null;
+	}
+
+	@Override
+	public boolean existsById(String id) {
+		return memberMapper.existsById(id) > 0;
 	}
 
 }

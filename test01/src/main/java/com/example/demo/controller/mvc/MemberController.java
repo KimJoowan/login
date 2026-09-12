@@ -20,15 +20,13 @@ import com.example.demo.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
 @Controller
 @RequestMapping("/member")
 @RequiredArgsConstructor
-@Log4j2
 public class MemberController {
 
-	private final MemberService service;
+	private final MemberService memberService;
 
 	@GetMapping("/signup")
 	public String register(Model model) {
@@ -44,7 +42,7 @@ public class MemberController {
 		}
 
 		try {
-			service.register(request);
+			memberService.register(request);
 
 		} catch (DuplicateMemberIdException e) {
 			bindingResult.rejectValue("id", "duplicate", e.getMessage());
@@ -64,13 +62,14 @@ public class MemberController {
 	}
 
 	@GetMapping("/info")
-	public String name(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+	public String showMemberInfo(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+		
 		if (userDetails == null) {
 			return "redirect:/member/login";
 		}
 
 		String id = userDetails.getUsername();
-		MemberDto member = service.findById(userDetails.getUsername());
+		MemberDto member = memberService.showMemberInfo(userDetails.getUsername());
 
 		model.addAttribute("id", id);
 		model.addAttribute("memberUpdateRequest", new MemberUpdateRequest(member.getUserName(), member.getEmail()));
@@ -91,7 +90,7 @@ public class MemberController {
 		}
 
 		try {
-			service.updateMember(id, request);
+			memberService.updateMember(id, request);
 		} catch (DuplicateEmailException exception) {
 			bindingResult.rejectValue("email", "duplicate", exception.getMessage());
 			return "member/info";
@@ -103,7 +102,7 @@ public class MemberController {
 	@PostMapping("/delete")
 	public String delete(@AuthenticationPrincipal UserDetails userDetails, HttpServletRequest request) {
 		String id = userDetails.getUsername();
-		service.withdrawMember(id);
+		memberService.withdrawMember(id);
 
 		request.getSession().invalidate();
 

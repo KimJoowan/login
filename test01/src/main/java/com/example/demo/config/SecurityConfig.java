@@ -41,17 +41,22 @@ public class SecurityConfig {
 
 				.headers(headers -> headers.contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; "
 						+ "script-src 'self'; " + "style-src 'self'; " + "img-src 'self' data:; " + "font-src 'self'; "
-						+ "object-src 'none'; " + "base-uri 'self'; " + "form-action 'self'; " + // 추가
-						"frame-ancestors 'none'")))
+						+ "object-src 'none'; " + "base-uri 'self'; " + "form-action 'self'; " + "frame-ancestors 'none'")))
 
 				// Spring Security 6.x 기준 정적 자원 및 URL 권한 설정
 				.authorizeHttpRequests(auth -> auth.dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR)
 						.permitAll()
+						
 						.requestMatchers("/", "/member/login", "/member/signup", "/member/check-id", "/css/**",
 								"/js/**", "/images/**", "/fonts/**", "/error",
 								"/.well-known/appspecific/com.chrome.devtools.json")
-						.permitAll().requestMatchers("/admin/**").hasRole("ADMIN")
-						.requestMatchers("/actuator", "/actuator/**").hasRole("ADMIN").anyRequest().authenticated())
+						.permitAll()
+
+						.requestMatchers("/admin/**").hasRole("ADMIN")
+
+						.requestMatchers("/actuator", "/actuator/**").hasRole("ADMIN")
+						
+						.anyRequest().authenticated())
 
 				// 폼 로그인 설정
 				.formLogin(form -> form.loginPage("/member/login").loginProcessingUrl("/member/login")
@@ -59,9 +64,8 @@ public class SecurityConfig {
 						.failureHandler(failureHandler).permitAll())
 
 				// 인증 성공 시 세션 ID 변경
-				.sessionManagement(
-						session -> session.sessionFixation(fixation -> fixation.changeSessionId()).maximumSessions(1)
-								.maxSessionsPreventsLogin(false).expiredUrl("/") // 세션이 만료되었을 때 이동할 페이지
+				.sessionManagement(session -> session.sessionFixation(fixation -> fixation.changeSessionId())
+						.maximumSessions(1).maxSessionsPreventsLogin(false).expiredUrl("/") // 세션이 만료되었을 때 이동할 페이지
 				)
 
 				// 로그아웃 설정

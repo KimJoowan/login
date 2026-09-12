@@ -18,12 +18,6 @@ public class AccountLockMapperTest {
 	
 	@Autowired
     private AccountLockMapper accountLockMapper;
-   
-    @Test
-    void findById() {
-    	int num = 41;
-    	log.info(accountLockMapper.findById(num));
-    }
   
     @Test
     void isLoginAllowed() {

@@ -13,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.domain.MemberDto;
+import com.example.demo.domain.MemberUpdateRequest;
 
 import lombok.RequiredArgsConstructor;
 
@@ -60,15 +61,7 @@ public class MemberMapperTest {
     }
     
     
-    @Test
-    void updateMemberTest() {   	  
-    	MemberDto dto = new MemberDto();   
-    	dto.setId("ee");
-    	dto.setUserName("bb");
-    	dto.setEmail("a01055136572@gmail.com");
-    	
-        memberMapper.updateMember(dto);
-    }
+   
     
     @Test
     void withdrawMemberTest() {

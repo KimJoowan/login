@@ -22,7 +22,6 @@ public class MvcExceptionHandler {
 	
 	@ExceptionHandler(MemberNotFoundException.class)
 	public String handleMemberNotFound(
-	        MemberNotFoundException e,
 	        HttpServletRequest request) {
 
 	    HttpSession session = request.getSession(false);

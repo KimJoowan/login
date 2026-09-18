@@ -1,70 +1,93 @@
 package com.example.demo.ratelimit;
 
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.stereotype.Component;
-
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Stream;
+import java.util.Set;
+
+import org.springframework.stereotype.Component;
+
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.Data;
 
 /**
  * 설정된 정책을 HTTP 메서드와 경로별로 관리합니다.
  */
+@Data
 @Component
 public class PolicyResolver {
 
-	private static final List<RateLimitPolicy> NO_POLICIES = List.of();
+	// 같은 라우트에서는 IP → ACCOUNT, 같은 범위에서는 정책 이름 순서로 실행합니다.
+	private static final Comparator<RateLimitPolicy> POLICY_ORDER = Comparator
+			.comparingInt(PolicyResolver::scopePriority)
+			.thenComparing(RateLimitPolicy::name);
 
-	private final Map<Route, List<RateLimitPolicy>> policiesByRoute;
+	RateLimitProperties properties;
+	private final Map<Route, List<RateLimitPolicy>> policiesByRoute = indexPoliciesByRoute(properties.policies());
 
-	/**
-	 * 설정된 정책으로 라우트 맵을 생성합니다.
-	 *
-	 * @param properties Rate Limit 설정
-	 */
-	public PolicyResolver(RateLimitProperties properties) {
-		this.policiesByRoute = routes(properties.policies());
+	/** 요청의 HTTP 메서드와 서블릿 경로에 정확히 일치하는 정책을 반환합니다. */
+	public List<RateLimitPolicy> resolve(HttpServletRequest request) {
+		Route route = new Route(request.getMethod(), request.getServletPath());
+		return policiesByRoute.getOrDefault(route, List.of());
 	}
 
-	// 정책 설정을 (HTTP 메서드, 경로) 기준으로 변환합니다.
-	private static Map<Route, List<RateLimitPolicy>> routes(Map<String, RateLimitProperties.Rule> rules) {
+	private static Map<Route, List<RateLimitPolicy>> indexPoliciesByRoute(Map<String, RateLimitProperties.Rule> rules) {
 		Map<Route, List<RateLimitPolicy>> routes = new HashMap<>();
 
-		rules.forEach((name, rule) -> {
-			List<RateLimitPolicy> policies = rule.limits().entrySet().stream().sorted(Map.Entry.comparingByKey())
-					.map(entry -> policy(name, entry.getKey(), entry.getValue(), rule.responseFormat())).toList();
+		for (var entry : rules.entrySet()) {
+			String policyName = entry.getKey();
+			RateLimitProperties.Rule rule = entry.getValue();
+			List<RateLimitPolicy> policies = createPolicies(policyName, rule);
+			registerRoutes(routes, rule, policies);
+		}
 
-			rule.methods().stream().map(String::strip).map(method -> method.toUpperCase(Locale.ROOT)).distinct()
-					.forEach(method -> routes.merge(new Route(method, rule.path()), policies, PolicyResolver::combine));
-		});
-
+		// 모든 규칙을 합친 뒤 한 번만 정렬하고 외부 변경을 막습니다.
+		for (List<RateLimitPolicy> policies : routes.values()) {
+			policies.sort(POLICY_ORDER);
+		}
+		
+		routes.replaceAll((route, policies) -> List.copyOf(policies));
 		return Map.copyOf(routes);
 	}
 
-	// 같은 라우트에 등록된 정책을 하나의 목록으로 합칩니다.
-	private static List<RateLimitPolicy> combine(List<RateLimitPolicy> first, List<RateLimitPolicy> second) {
-		return Stream.concat(first.stream(), second.stream()).toList();
+	private static List<RateLimitPolicy> createPolicies(String name, RateLimitProperties.Rule rule) {
+		List<RateLimitPolicy> policies = new ArrayList<>();
+
+		for (var entry : rule.limits().entrySet()) {
+			RateLimitPolicy.Scope scope = entry.getKey();
+			RateLimitProperties.Limit limit = entry.getValue();
+			policies.add(new RateLimitPolicy(
+					name, scope, limit.capacity(), limit.refillTokens(), limit.refillPeriod(), rule.responseFormat()));
+		}
+
+		return policies;
 	}
 
-	// 설정값을 실행 가능한 정책으로 변환합니다.
-	private static RateLimitPolicy policy(String name, RateLimitPolicy.Scope scope, RateLimitProperties.Limit limit,
-			RateLimitPolicy.ResponseFormat responseFormat) {
+	private static void registerRoutes(Map<Route, List<RateLimitPolicy>> routes, RateLimitProperties.Rule rule, List<RateLimitPolicy> policies) {
+		Set<Route> registeredRoutes = new HashSet<>();
 
-		return new RateLimitPolicy(name, scope, limit.capacity(), limit.refillTokens(), limit.refillPeriod(),
-				responseFormat);
+		for (String method : rule.methods()) {
+			Route route = new Route(method, rule.path());
+			
+			// GET/get처럼 대소문자만 다른 메서드가 한 규칙에 있으면 한 번만 등록합니다.
+			if (!registeredRoutes.add(route)) {
+				continue;
+			}
+
+			List<RateLimitPolicy> routePolicies = routes.computeIfAbsent(route, ignored -> new ArrayList<>());
+			routePolicies.addAll(policies);
+		}
 	}
 
-	/**
-	 * 요청에 등록된 정책을 반환합니다.
-	 *
-	 * @param request HTTP 요청
-	 * @return 적용할 정책 목록
-	 */
-	public List<RateLimitPolicy> resolve(HttpServletRequest request) {
-		Route route = new Route(request.getMethod(), request.getServletPath());
-		return policiesByRoute.getOrDefault(route, NO_POLICIES);
+	private static int scopePriority(RateLimitPolicy policy) {
+		return switch (policy.scope()) {
+			case IP -> 0;
+			case ACCOUNT -> 1;
+		};
 	}
 
 	private record Route(String method, String path) {

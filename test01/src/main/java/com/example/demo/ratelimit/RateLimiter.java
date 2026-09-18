@@ -1,20 +1,20 @@
 package com.example.demo.ratelimit;
 
+import java.math.BigInteger;
+import java.time.Duration;
+import java.util.concurrent.Semaphore;
+
+import org.springframework.stereotype.Component;
+
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.RemovalCause;
 
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.ConsumptionProbe;
+import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.cache.CaffeineCacheMetrics;
-import io.micrometer.core.instrument.Counter;
-
-import java.math.BigInteger;
-import java.time.Duration;
-import java.util.concurrent.Semaphore;
-
-import org.springframework.stereotype.Component;
 
 /**
  * 식별자별 토큰 버킷과 캐시를 관리합니다.
@@ -23,61 +23,35 @@ import org.springframework.stereotype.Component;
 public class RateLimiter {
 
 	private static final long TOKENS_PER_REQUEST = 1;
+	private static final BigInteger NANOS_PER_SECOND = BigInteger.valueOf(1_000_000_000L);
 
 	private final Cache<BucketKey, Bucket> buckets;
 	private final Semaphore bucketSlots;
-	private final Counter admissionRejected;
+	private final Counter rejectedBucketCounter;
 
-	/**
-	 * 버킷 캐시와 관련 메트릭을 초기화합니다.
-	 *
-	 * @param properties Rate Limit 설정
-	 * @param meterRegistry 메트릭 레지스트리
-	 */
 	public RateLimiter(RateLimitProperties properties, MeterRegistry meterRegistry) {
 		validateCacheExpiration(properties);
 
-		int maximumBuckets = Math.toIntExact(properties.cache().maximumSize());
+		RateLimitProperties.Cache cacheSettings = properties.cache();
+		int maximumBuckets = Math.toIntExact(cacheSettings.maximumSize());
 		this.bucketSlots = new Semaphore(maximumBuckets);
-		this.admissionRejected = meterRegistry.counter("ratelimit.cache.admission.rejected");
+		this.rejectedBucketCounter = meterRegistry.counter("ratelimit.cache.admission.rejected");
 
-		Counter expiredEvictions = meterRegistry.counter("ratelimit.cache.evictions", "cause", "expired");
+		Counter expiredBucketCounter = meterRegistry.counter("ratelimit.cache.evictions", "cause", "expired");
 
+		// 용량 초과 시 기존 버킷을 퇴출하면 제한이 초기화되므로, 슬롯으로 새 버킷 생성을 제한합니다.
 		this.buckets = Caffeine.newBuilder()
-				.expireAfterAccess(properties.cache().expireAfterAccess()).recordStats()
+				.expireAfterAccess(cacheSettings.expireAfterAccess())
+				.recordStats()
 				.evictionListener((BucketKey key, Bucket bucket, RemovalCause cause) -> {
 					if (cause == RemovalCause.EXPIRED) {
 						bucketSlots.release();
-						expiredEvictions.increment();
+						expiredBucketCounter.increment();
 					}
-				}).build();
+				})
+				.build();
 
 		CaffeineCacheMetrics.monitor(meterRegistry, buckets, "rateLimitBuckets");
-	}
-
-	// 완전히 충전되기 전에 버킷이 만료되지 않도록 검증합니다.
-	private static void validateCacheExpiration(RateLimitProperties properties) {
-		BigInteger cacheNanos = toBigNanos(properties.cache().expireAfterAccess());
-
-		for (RateLimitProperties.Rule rule : properties.policies().values()) {
-			for (RateLimitProperties.Limit limit : rule.limits().values()) {
-				// 만료시간 × 충전 토큰 >= 충전주기 × 용량
-				// 나눗셈 없이 비교하여 반올림 오류를 피합니다.
-				BigInteger availableRefill = cacheNanos.multiply(BigInteger.valueOf(limit.refillTokens()));
-
-				BigInteger requiredRefill = toBigNanos(limit.refillPeriod())
-						.multiply(BigInteger.valueOf(limit.capacity()));
-
-				if (availableRefill.compareTo(requiredRefill) < 0)
-					throw new IllegalArgumentException("Rate Limit 캐시 만료시간은 모든 버킷의 전체 충전 시간 이상이어야 합니다.");
-			}
-		}
-	}
-
-	// Duration 비교 과정의 오버플로를 방지합니다.
-	private static BigInteger toBigNanos(Duration duration) {
-		return BigInteger.valueOf(duration.getSeconds()).multiply(BigInteger.valueOf(1_000_000_000L))
-				.add(BigInteger.valueOf(duration.getNano()));
 	}
 
 	/**
@@ -91,47 +65,74 @@ public class RateLimiter {
 	public ConsumptionProbe tryConsume(RateLimitPolicy policy, String identity) {
 		BucketKey key = new BucketKey(policy.name(), policy.scope(), identity);
 		Bucket bucket = buckets.getIfPresent(key);
-		if (bucket == null)
-			bucket = createBucket(key, policy);
+		if (bucket == null) {
+			bucket = getOrCreateBucket(key, policy);
+		}
 
 		return bucket.tryConsumeAndReturnRemaining(TOKENS_PER_REQUEST);
 	}
 
-	// 동일 키의 버킷이 중복 생성되지 않도록 동기화합니다.
-	private synchronized Bucket createBucket(BucketKey key, RateLimitPolicy policy) {
+	// 캐시 미스일 때만 잠금을 획득하고, 대기 중 생성된 버킷이 있는지 다시 확인합니다.
+	private synchronized Bucket getOrCreateBucket(BucketKey key, RateLimitPolicy policy) {
 		Bucket bucket = buckets.getIfPresent(key);
-		if (bucket == null) {
-			reserveSlot();
-
-			try {
-				bucket = newBucket(policy);
-				buckets.put(key, bucket);
-			} catch (RuntimeException e) {
-				bucketSlots.release();
-				throw e;
-			}
+		if (bucket != null) {
+			return bucket;
 		}
-		return bucket;
+
+		reserveSlot();
+		try {
+			Bucket createdBucket = createBucket(policy);
+			buckets.put(key, createdBucket);
+			return createdBucket;
+		} catch (RuntimeException e) {
+			bucketSlots.release();
+			throw e;
+		}
 	}
 
 	// 만료된 항목을 정리한 뒤 새 버킷의 캐시 공간을 확보합니다.
 	private void reserveSlot() {
-		if (bucketSlots.tryAcquire())
+		if (bucketSlots.tryAcquire()) {
 			return;
+		}
 
 		buckets.cleanUp();
 		if (!bucketSlots.tryAcquire()) {
-			admissionRejected.increment();
+			rejectedBucketCounter.increment();
 			throw new CapacityExceededException();
 		}
 	}
 
 	// 정책에 맞는 Bucket4j 버킷을 생성합니다.
-	private static Bucket newBucket(RateLimitPolicy policy) {
+	private static Bucket createBucket(RateLimitPolicy policy) {
 		return Bucket.builder()
 				.addLimit(limit -> limit.capacity(policy.capacity())
 						.refillGreedy(policy.refillTokens(), policy.refillPeriod()))
 				.build();
+	}
+
+	// 만료 후 새 버킷이 생성되어도 제한이 느슨해지지 않도록 전체 충전 시간을 보장합니다.
+	private static void validateCacheExpiration(RateLimitProperties properties) {
+		BigInteger expirationNanos = toBigNanos(properties.cache().expireAfterAccess());
+
+		for (RateLimitProperties.Rule rule : properties.policies().values()) {
+			for (RateLimitProperties.Limit limit : rule.limits().values()) {
+				// 만료시간 × 충전 토큰 >= 충전주기 × 용량: 나눗셈의 반올림 없이 비교합니다.
+				BigInteger availableRefill = expirationNanos.multiply(BigInteger.valueOf(limit.refillTokens()));
+				BigInteger requiredRefill = toBigNanos(limit.refillPeriod())
+						.multiply(BigInteger.valueOf(limit.capacity()));
+
+				if (availableRefill.compareTo(requiredRefill) < 0) {
+					throw new IllegalArgumentException("Rate Limit 캐시 만료시간은 모든 버킷의 전체 충전 시간 이상이어야 합니다.");
+				}
+			}
+		}
+	}
+
+	// 긴 Duration도 오버플로 없이 비교합니다.
+	private static BigInteger toBigNanos(Duration duration) {
+		return BigInteger.valueOf(duration.getSeconds()).multiply(NANOS_PER_SECOND)
+				.add(BigInteger.valueOf(duration.getNano()));
 	}
 
 	public static final class CapacityExceededException extends RuntimeException {

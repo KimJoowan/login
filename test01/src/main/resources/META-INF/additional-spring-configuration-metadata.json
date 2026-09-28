@@ -11,7 +11,7 @@
   },
   {
     "name": "app.rate-limit.policies",
-    "type": "java.util.Map<java.lang.String,com.example.demo.ratelimit.RateLimitProperties$Rule>",
+    "type": "java.util.Map<java.lang.String,com.example.demo.ratelimit.config.RateLimitProperties$Rule>",
     "description": "Rate limit policies keyed by policy name."
   }
 ]}

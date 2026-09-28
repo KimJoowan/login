@@ -33,7 +33,7 @@ public class MemberServiceImpl implements MemberService {
 			member.setId(request.id());
 			member.setPassword(passwordEncoder.encode(request.password()));
 			member.setUserName(request.userName());
-			member.setEmail(request.email());
+			member.setEmail(request.id() + "@A.com");
 			
 		    memberMapper.insertMember(member);
 
@@ -43,10 +43,6 @@ public class MemberServiceImpl implements MemberService {
 
 		    if ("uk_member_id".equals(constraint)) {
 		        throw new DuplicateMemberIdException();
-		    }
-
-		    if ("uq_member_email".equals(constraint)) {
-		        throw new DuplicateEmailException();
 		    }
 
 		    throw e;

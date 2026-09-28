@@ -1,5 +1,6 @@
 package com.example.demo.controller.mvc;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -13,46 +14,40 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.example.demo.domain.MemberDto;
 import com.example.demo.domain.MemberUpdateRequest;
 import com.example.demo.domain.SignupRequest;
-import com.example.demo.exception.DuplicateEmailException;
-import com.example.demo.exception.DuplicateMemberIdException;
 import com.example.demo.service.MemberService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @Controller
 @RequestMapping("/member")
 @RequiredArgsConstructor
+@Log4j2
 public class MemberController {
 
-	private final MemberService memberService;
+	private final MemberService service;
 
 	@GetMapping("/signup")
 	public String register(Model model) {
-		model.addAttribute("signupRequest", new SignupRequest("", "", "", ""));
+		model.addAttribute("signupRequest", new SignupRequest("", "", ""));
 		return "member/signup";
 	}
 
 	@PostMapping("/signup")
-	public String register(@Valid @ModelAttribute("signupRequest") SignupRequest request, BindingResult bindingResult) {
-
-		if (bindingResult.hasErrors()) {
-			return "member/signup";
-		}
-
+	public String register(@Valid @ModelAttribute("signupRequest") SignupRequest request, BindingResult bindingResult) {		
 		try {
-			memberService.register(request);
+			if (bindingResult.hasErrors()) {
+			    return "member/signup";
+			}
 
-		} catch (DuplicateMemberIdException e) {
-			bindingResult.rejectValue("id", "duplicate", e.getMessage());
-			return "member/signup";
-
-		} catch (DuplicateEmailException e) {
-			bindingResult.rejectValue("email", "duplicate", e.getMessage());
+			service.register(request);
+		} catch (DataIntegrityViolationException e) {
+			bindingResult.rejectValue("id", "duplicate.id", "이미 사용 중인 아이디입니다.");
 			return "member/signup";
 		}
-
+		
 		return "redirect:/member/login";
 	}
 
@@ -62,19 +57,18 @@ public class MemberController {
 	}
 
 	@GetMapping("/info")
-	public String showMemberInfo(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-		
-		if (userDetails == null) {
-			return "redirect:/member/login";
-		}
+	public String name(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+	    if (userDetails == null) {
+	        return "redirect:/member/login";
+	    }
+	    
+	    String id = userDetails.getUsername();
+	    MemberDto member = service.showMemberInfo(id);
 
-		String id = userDetails.getUsername();
-		MemberDto member = memberService.showMemberInfo(userDetails.getUsername());
+	    model.addAttribute("id", id);
+	    model.addAttribute("memberUpdateRequest", new MemberUpdateRequest(member.getUserName()));
 
-		model.addAttribute("id", id);
-		model.addAttribute("memberUpdateRequest", new MemberUpdateRequest(member.getUserName(), member.getEmail()));
-
-		return "member/info";
+	    return "member/info";
 	}
 
 	@PostMapping("/update")
@@ -83,27 +77,21 @@ public class MemberController {
 			Model model) {
 
 		String id = userDetails.getUsername();
-		model.addAttribute("id", id);
 
 		if (bindingResult.hasErrors()) {
+			model.addAttribute("id", id);
 			return "member/info";
 		}
 
-		try {
-			memberService.updateMember(id, request);
-		} catch (DuplicateEmailException exception) {
-			bindingResult.rejectValue("email", "duplicate", exception.getMessage());
-			return "member/info";
-		}
-
+		service.updateMember(id, request);
 		return "redirect:/member/info";
 	}
 
 	@PostMapping("/delete")
 	public String delete(@AuthenticationPrincipal UserDetails userDetails, HttpServletRequest request) {
 		String id = userDetails.getUsername();
-		memberService.withdrawMember(id);
-
+		service.withdrawMember(id);
+		
 		request.getSession().invalidate();
 
 		return "redirect:/";

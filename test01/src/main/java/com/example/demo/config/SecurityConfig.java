@@ -12,10 +12,10 @@ import com.example.demo.ratelimit.RateLimiter;
 
 import io.micrometer.core.instrument.MeterRegistry;
 
-import com.example.demo.ratelimit.IdentityResolver;
-import com.example.demo.ratelimit.RateLimitFilter;
-import com.example.demo.ratelimit.PolicyResolver;
-import com.example.demo.ratelimit.RateLimitProperties;
+import com.example.demo.ratelimit.identity.IdentityResolver;
+import com.example.demo.ratelimit.web.RateLimitFilter;
+import com.example.demo.ratelimit.policy.PolicyResolver;
+import com.example.demo.ratelimit.config.RateLimitProperties;
 
 import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;

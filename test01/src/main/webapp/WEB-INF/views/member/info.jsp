@@ -11,11 +11,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="<c:url value='/css/common.css' />">
+<link rel="stylesheet" href="<c:url value='/css/member/common.css' />">
 <link rel="stylesheet" href="<c:url value='/css/member/info.css' />">
 <script src="<c:url value='/js/member/info.js' />" defer></script>
 <title>회원 정보 수정</title>
 </head>
 <body>
+    <header class="auth-header">
+        <a class="brand" href="<c:url value='/'/>" aria-label="MyService 홈"><span class="brand-mark" aria-hidden="true">m<span>·</span></span>MyService<span class="brand-period">.</span></a>
+        <a class="back-home" href="<c:url value='/'/>">← 홈으로 돌아가기</a>
+    </header>
+    <main class="auth-layout">
+        <aside class="auth-story">
+            <p class="eyebrow">YOUR PERSONAL SPACE</p>
+            <h1>내 모습 그대로,<br> 나답게.</h1>
+            <p>나를 표현하는 닉네임부터 이메일까지.<br> 내 정보를 한곳에서 관리하세요.</p>
+            <div class="story-art" aria-hidden="true"><span>m.</span></div>
+            <span class="story-caption">A LITTLE SIMPLER. A LITTLE BETTER.</span>
+        </aside>
 	<div class="profile-container">
 		<div class="profile-header">
 			<div class="profile-avatar">
@@ -30,9 +44,6 @@
 				<c:out value="${memberUpdateRequest.userName}" default="사용자" />
 				님
 			</h2>
-			<p>
-				<c:out value="${memberUpdateRequest.email}" default="이메일 정보 없음" />
-			</p>
 			<span class="badge">회원 정보</span>
 		</div>
 		<!-- 회원정보 수정 -->
@@ -43,12 +54,7 @@
 			<div class="input-group">
 				<label for="userName">닉네임</label>
 				<form:input path="userName" id="userName" maxlength="30" />
-				<form:errors path="userName" cssClass="error-message" delimiter="<br>" />
-			</div>
-			<div class="input-group">
-				<label for="email">이메일</label>
-				<form:input path="email" id="email" type="email" maxlength="100" />
-				<form:errors path="email" cssClass="error-message" />
+				<form:errors path="userName" cssClass="error-message" delimiter="<br> " />
 			</div>
 			<div class="btn-group">
 				<a href="${mainUrl}" class="btn-secondary"> 메인으로 </a>
@@ -62,5 +68,8 @@
 		</form>
 		
 	</div>
+    </main>
+    <footer class="auth-copyright">© 2026 MyService · 조금 더 단순하게, 조금 더 나답게.</footer>
 </body>
 </html>
+

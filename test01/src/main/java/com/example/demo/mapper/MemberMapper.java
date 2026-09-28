@@ -18,4 +18,5 @@ public interface MemberMapper {
 
 	int updateMember(@Param("id") String id, @Param("request") MemberUpdateRequest request);
 
+	int getById(String id);
 }

@@ -1,0 +1,43 @@
+@charset "UTF-8";
+:root {
+    --paper: #f8f9f5;
+    --ink: #202f29;
+    --muted: #66736b;
+    --green: #25644b;
+    --green-dark: #1b4d39;
+    --mint: #e8efdf;
+    --line: #dfe4da;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 100px; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; -webkit-font-smoothing: antialiased; line-height: 1.6; }
+h1, h2, h3, p { margin: 0; }
+a { color: inherit; text-decoration: none; }
+button, input { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+button { cursor: pointer; }
+a, button, input, summary { touch-action: manipulation; }
+a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px solid var(--green); outline-offset: 5px; }
+button:disabled { opacity: .55; cursor: wait; }
+.shell { width: min(1180px, calc(100% - 80px)); margin-inline: auto; }
+.brand { display: inline-flex; align-items: center; gap: 10px; font-size: 23px; font-weight: 750; letter-spacing: -.8px; white-space: nowrap; }
+.brand-period { color: var(--green); margin-left: -9px; }
+.brand-mark { width: 34px; height: 34px; display: grid; place-content: center; position: relative; background: var(--green); color: white; border-radius: 10px; font-size: 26px; line-height: 1; padding-bottom: 5px; letter-spacing: -3px; }
+.brand-mark span { position: absolute; right: 5px; bottom: 2px; color: #d7ed9c; }
+.eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 2px; color: var(--green); display: flex; align-items: center; gap: 9px; }
+.status-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+.button { display: inline-flex; align-items: center; justify-content: center; gap: 28px; min-height: 52px; padding: 14px 23px; border: 1px solid transparent; border-radius: 8px; font-size: 14px; font-weight: 650; transition: background .2s, transform .2s; }
+.button:hover { transform: translateY(-2px); }
+.button span { font-size: 20px; line-height: 1; }
+.button-green { background: var(--green); color: white; }
+.button-green:hover { background: var(--green-dark); }
+.button-dark { background: var(--ink); color: white; }
+.button-dark:hover { background: var(--green); }
+.button-small { min-height: 40px; padding: 8px 17px; font-size: 12px; gap: 20px; }
+.text-link { border: 0; background: none; font-size: 13px; font-weight: 600; color: var(--ink); padding: 10px 4px; }
+.text-link:hover { color: var(--green); }
+.skip-link { position: fixed; z-index: 100; top: -100px; left: 20px; background: var(--ink); color: white; padding: 12px 20px; }
+.skip-link:focus { top: 10px; }
+@media (max-width: 700px) { .shell { width: calc(100% - 40px); } .brand { font-size: 20px; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
+

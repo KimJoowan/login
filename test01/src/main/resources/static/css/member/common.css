@@ -1,0 +1,63 @@
+@charset "UTF-8";
+body { min-height: 100vh; }
+.auth-header { max-width: 1280px; margin: auto; padding: 30px 40px; display: flex; align-items: center; justify-content: space-between; }
+.back-home { font-size: 12px; color: var(--muted); padding: 8px 0; }
+.back-home:hover { color: var(--green); }
+.auth-layout { display: grid; grid-template-columns: 1fr 1fr; width: min(1060px, calc(100% - 80px)); margin: 28px auto 55px; background: #fff; border: 1px solid var(--line); border-radius: 22px; overflow: hidden; min-height: 630px; }
+.auth-story { position: relative; overflow: hidden; padding: 52px 44px; display: flex; flex-direction: column; background: #e8efdf; }
+.auth-story h1 { font-size: 39px; letter-spacing: -2px; line-height: 1.45; margin: 24px 0 18px; word-break: keep-all; }
+.auth-story > p:not(.eyebrow) { font-size: 13px; color: var(--muted); line-height: 1.9; word-break: keep-all; }
+.story-art { min-height: 190px; flex: 1; display: grid; place-items: center; position: relative; margin-block: 24px; }
+.story-art::before, .story-art::after { content: ""; width: 180px; height: 180px; border: 1px solid #b5c6a6; border-radius: 50%; position: absolute; }
+.story-art::after { width: 240px; height: 240px; border-style: dashed; opacity: .7; }
+.story-art span { background: var(--green); color: #e2f0b8; width: 110px; height: 110px; border-radius: 27px; display: grid; place-items: center; font-size: 79px; font-weight: 700; transform: rotate(-12deg); line-height: 1; padding-bottom: 18px; box-shadow: 12px 16px 0 #d1dfc1; }
+.story-caption { font-size: 9px; letter-spacing: 2px; color: #526a42; }
+.login-container, .signup-container, .profile-container { min-width: 0; width: 100%; padding: 46px; align-self: center; }
+.form-kicker { color: var(--green); font-size: 10px; letter-spacing: 1.7px; font-weight: 700; margin-bottom: 9px; }
+.form-title { font-size: 29px; letter-spacing: -1px; line-height: 1.4; }
+.form-description { color: var(--muted); font-size: 12px; margin: 12px 0 28px; line-height: 1.8; }
+.input-group { margin-bottom: 19px; }
+.input-group label { display: block; margin-bottom: 8px; font-size: 12px; color: #394b3f; font-weight: 650; }
+.input-group input { width: 100%; min-width: 0; min-height: 47px; border: 1px solid #dce2d7; border-radius: 7px; background: #fcfdf9; padding: 11px 13px; font-size: 14px; color: var(--ink); transition: border-color .2s, box-shadow .2s; }
+.input-group input::placeholder { color: #879081; font-size: 12px; }
+.input-group input:focus { outline: 0; border-color: var(--green); box-shadow: 0 0 0 3px #25644b16; background: #fff; }
+.input-group input[readonly] { color: #72806f; background: #eff2ea; }
+.input-with-btn { display: flex; gap: 8px; }
+.btn-submit, .btn-secondary, .btn-check { border: 1px solid transparent; border-radius: 7px; min-height: 47px; padding: 11px 16px; font-size: 13px; font-weight: 650; text-align: center; transition: background .2s; }
+.btn-submit { width: 100%; background: var(--green); color: #fff; margin-top: 6px; }
+.btn-submit:hover { background: var(--green-dark); }
+.btn-check { background: #eaf0e2; color: var(--green); border-color: #d8e2ce; white-space: nowrap; font-size: 11px; }
+.btn-check:hover, .btn-secondary:hover { background: #dce7d0; }
+.btn-secondary { color: var(--green); background: #edf2e7; }
+.error-message { display: block; color: #b33333; font-size: 12px; margin-top: 7px; overflow-wrap: anywhere; }
+.error-message:empty, .error-message[hidden] { display: none; }
+#login-error:not(:empty) { padding: 11px 13px; background: #fff1ef; border-radius: 6px; margin-bottom: 15px; }
+.check-message { font-size: 12px; margin-top: 7px; color: var(--muted); }
+.check-message:empty { display: none; }
+.check-message.success { color: var(--green); }
+.check-message.error { color: #b33333; }
+.field-hint { font-size: 10px; color: var(--muted); margin-top: 6px; }
+.footer { margin-top: 25px; padding-top: 22px; border-top: 1px solid var(--line); font-size: 12px; text-align: center; color: var(--muted); }
+.footer a { color: var(--green); font-weight: 700; margin-left: 6px; }
+.footer a:hover { text-decoration: underline; }
+.auth-copyright { text-align: center; font-size: 10px; color: var(--muted); padding: 0 20px 25px; }
+.profile-header { padding-bottom: 24px; margin-bottom: 23px; border-bottom: 1px solid var(--line); }
+.profile-avatar { width: 58px; height: 58px; display: grid; place-items: center; background: var(--mint); color: var(--green); font-size: 24px; font-weight: 650; border-radius: 18px; margin-bottom: 15px; }
+.profile-header h2 { font-size: 24px; overflow-wrap: anywhere; }
+.profile-header p { font-size: 12px; color: var(--muted); margin-top: 5px; overflow-wrap: anywhere; }
+.badge { font-size: 10px; background: var(--mint); color: var(--green); border-radius: 20px; padding: 4px 10px; display: inline-block; margin-top: 10px; }
+.btn-group { display: flex; gap: 10px; margin-top: 24px; }
+.btn-group > * { flex: 1; width: auto; margin: 0; }
+#deleteForm { margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--line); text-align: right; }
+.btn-danger-outline { min-height: 40px; border: 0; background: transparent; color: #a34c43; font-size: 11px; text-decoration: underline; padding: 8px 4px; }
+@media (max-width: 900px) { .auth-story { padding: 38px 30px; } .auth-story h1 { font-size: 32px; } .login-container, .signup-container, .profile-container { padding: 35px 28px; } }
+@media (max-width: 650px) {
+    .auth-header { padding: 22px 20px; } .auth-layout { grid-template-columns: 1fr; width: calc(100% - 32px); margin: 12px auto 28px; min-height: 0; border-radius: 16px; }
+    .auth-story { padding: 25px 26px; } .auth-story h1 { font-size: 27px; margin: 12px 0 10px; line-height: 1.4; }
+    .auth-story h1 br { display: none; } .auth-story > p:not(.eyebrow) { font-size: 12px; }
+    .auth-story > p br { display: none; } .story-art, .story-caption { display: none; }
+    .auth-story .eyebrow { font-size: 8px; letter-spacing: 1.7px; }
+    .login-container, .signup-container, .profile-container { padding: 29px 25px; }
+    .form-title { font-size: 26px; } .input-group input { font-size: 16px; }
+    .back-home { font-size: 11px; } .btn-check { padding-inline: 12px; }
+}

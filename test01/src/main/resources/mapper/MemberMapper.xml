@@ -4,12 +4,15 @@
 
 <mapper namespace="com.example.demo.mapper.MemberMapper">
 
-	<select id="findById" parameterType="String"
-		resultType="com.example.demo.domain.MemberDto">
-		SELECT
-		*
-		FROM
-		public.member
+	<insert id="insertMember" parameterType="com.example.demo.domain.MemberDto"
+		useGeneratedKeys="true" keyProperty="number">
+		INSERT INTO public.member (id,password, "userName", email)
+		VALUES (#{id}, #{password}, #{userName},#{email})
+	</insert>
+
+	<select id="findById" parameterType="String" resultType="com.example.demo.domain.MemberDto">
+		SELECT *
+		FROM public.member
 		WHERE
 		id = #{id}
 	</select>
@@ -22,24 +25,21 @@
 		WHERE
 		id = #{id}
 	</select>
+	
+	<select id="getById" parameterType="String" resultType="int">
+		SELECT number
+		FROM public.member
+		WHERE
+		id = #{id}
+	</select>
 
 	<!-- 회원가입 -->
-	<insert id="insertMember"
-		parameterType="com.example.demo.domain.MemberDto"
-		useGeneratedKeys="true" keyProperty="number">
-		INSERT INTO public.member
-		(id,
-		password, "userName", email)
-		VALUES
-		(#{id}, #{password}, #{userName},
-		#{email})
-	</insert>
+	
 
 	<update id="updateMember">
 		UPDATE public.member
 		SET
-		"userName" = #{request.userName},
-		email = #{request.email}
+		"userName" = #{request.userName}
 		WHERE id = #{id}
 	</update>
 
@@ -48,16 +48,12 @@
 	<update id="withdrawMember">
 		UPDATE account_lock al
 		SET active = false
-		WHERE al.number = (
+		WHERE
+		al.number = (
 		SELECT number
 		FROM member
 		WHERE id = #{id}
 		)
 	</update>
-
-
-
-
-
-
+	
 </mapper>

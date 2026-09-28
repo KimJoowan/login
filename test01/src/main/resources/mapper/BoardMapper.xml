@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.BoardMapper">
+
+	<insert id="insertBoard"
+		parameterType="com.example.demo.domain.BoardDto">
+		INSERT INTO public.board ("idNumber", title, content)
+		VALUES (#{idNumber}, #{title}, #{content})
+	</insert>
+
+	<select id="findAll" resultType="com.example.demo.domain.BoardDto">
+   		 SELECT *
+    		FROM public.board
+    	ORDER BY bcode DESC
+    		LIMIT #{amount} OFFSET #{pageStart}
+	</select>
+
+	<select id="selectOne" resultType="com.example.demo.domain.BoardDto">
+		SELECT bcode, "idNumber", title, content, "createdAt"
+		FROM public.board
+		WHERE bcode = #{bcode}
+	</select>
+	
+	<select id="selectList" resultType="com.example.demo.domain.BoardDto">
+		SELECT bcode, "idNumber", title, content, "createdAt"
+		FROM public.board
+		WHERE "idNumber" = #{idNumber}
+		ORDER BY bcode DESC
+	</select>
+	
+	<select id="total" resultType="long">
+		select count(*) from public.board;
+	</select>
+	
+	<update id="updateBoard"
+		parameterType="com.example.demo.domain.BoardDto">
+		UPDATE public.board
+		SET
+			title = #{title}, content = #{content}
+		WHERE
+			bcode = #{bcode} AND "idNumber" = #{idNumber}
+	</update>
+
+	<delete id="deleteBoard">
+		DELETE FROM public.board
+		WHERE bcode = #{bcode}
+		AND "idNumber" = #{idNumber}
+	</delete>
+
+</mapper>

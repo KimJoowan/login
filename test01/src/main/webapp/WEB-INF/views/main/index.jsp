@@ -1,180 +1,81 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-	<%@ taglib prefix="c" uri="jakarta.tags.core" %>
-		<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
-			<c:url var="loginUrl" value="/member/login" />
-			<c:url var="signupUrl" value="/member/signup" />
-			<c:url var="logoutUrl" value="/member/logout" />
-			<c:url var="memberInfoUrl" value="/member/info" />
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<c:url var="homeUrl" value="/" />
+<c:url var="loginUrl" value="/member/login" />
+<c:url var="signupUrl" value="/member/signup" />
+<c:url var="logoutUrl" value="/member/logout" />
+<c:url var="memberInfoUrl" value="/member/info" />
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="복잡함은 덜고, 나에게 필요한 것만. MyService에서 나만의 웹 서비스 경험을 시작하세요.">
+    <title>MyService — 더 가벼운 시작</title>
+    <link rel="stylesheet" href="<c:url value='/css/common.css'/>">
+    <link rel="stylesheet" href="<c:url value='/css/main/index.css'/>">
+</head>
+<body>
+    <a class="skip-link" href="#main">본문 바로가기</a>
+    <header class="site-header">
+        <div class="shell header-inner">
+            <a class="brand" href="${homeUrl}" aria-label="MyService 홈"><span class="brand-mark" aria-hidden="true">m<span>·</span></span>MyService<span class="brand-period">.</span></a>
+            <nav class="main-nav" aria-label="주요 메뉴"><a href="<c:url value='/board/list'/>">게시판</a><a href="#features">서비스 소개</a><a href="#about">이용 방법</a><a href="#faq">자주 묻는 질문</a></nav>
+            <div class="header-actions">
+                <sec:authorize access="!isAuthenticated()"><a class="text-link" href="${loginUrl}">로그인</a><a class="button button-dark button-small" href="${signupUrl}">시작하기 <span aria-hidden="true">↗</span></a></sec:authorize>
+                <sec:authorize access="isAuthenticated()">
+                    <form action="${logoutUrl}" method="post"><input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"><button class="text-link" type="submit">로그아웃</button></form>
+                    <a class="button button-dark button-small" href="${memberInfoUrl}">내 정보 <span aria-hidden="true">↗</span></a>
+                </sec:authorize>
+            </div>
+        </div>
+    </header>
+    <main id="main">
+        <section class="hero shell" aria-labelledby="hero-title">
+            <div class="hero-copy">
+                <p class="eyebrow"><span class="status-dot"></span> LESS FRICTION, MORE POSSIBILITY</p>
+                <h1 id="hero-title">복잡함은 덜고,<br>가능성은 <span class="hero-emphasis">더 넓게.</span></h1>
+                <p class="hero-description">나에게 필요한 것만, 더 간결하게.<br>편안하고 자연스러운 웹 경험이 여기서 시작됩니다.</p>
+                <div class="hero-actions">
+                    <sec:authorize access="!isAuthenticated()"><a class="button button-green" href="${signupUrl}">나만의 공간 시작하기 <span aria-hidden="true">↗</span></a></sec:authorize>
+                    <sec:authorize access="isAuthenticated()"><a class="button button-green" href="${memberInfoUrl}">나의 정보 관리하기 <span aria-hidden="true">↗</span></a></sec:authorize>
+                    <a class="hero-secondary" href="#features">조금 더 알아보기 <span aria-hidden="true">↓</span></a>
+                </div>
+                <p class="hero-note"><span aria-hidden="true">✓</span> 간편한 가입 <span class="note-divider">/</span> 나를 위한 계정 관리</p>
+            </div>
+            <div class="hero-art" role="img" aria-label="나만의 공간을 표현한 프로필 카드 일러스트">
+                <div class="art-grid"></div><div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div>
+                <span class="art-spark spark-one">✳</span><span class="art-spark spark-two">✦</span>
+                <div class="floating-label"><span class="status-dot"></span> A SPACE FOR YOU</div>
+                <div class="preview-card">
+                    <div class="preview-top"><span class="preview-logo">m<span>·</span></span><span>MY PERSONAL SPACE</span><span class="preview-dots">•••</span></div>
+                    <div class="preview-greeting">반가워요! <span>✺</span><br><strong>오늘도, 나답게.</strong></div>
+                    <div class="preview-profile"><div class="avatar-art">m.</div><div><strong>나만의 프로필</strong><span>작은 시작, 새로운 가능성</span></div><span class="profile-check">✓</span></div>
+                    <div class="preview-tiles"><div><span class="tile-symbol">↗</span><strong>간편하게</strong><small>필요한 순간 바로</small></div><div><span class="tile-symbol">◎</span><strong>나에게 맞게</strong><small>내 정보 한눈에</small></div></div>
+                    <div class="preview-bottom"><span>YOUR EVERYDAY, SIMPLIFIED</span><span>↗</span></div>
+                </div>
+                <div class="floating-security"><span class="security-icon">✓</span><div><strong>내 정보는 소중하니까</strong><span>안전하게, 편안하게.</span></div></div>
+                <span class="art-caption">A LITTLE SIMPLER. A LITTLE BETTER.</span>
+            </div>
+        </section>
+        <div class="principles shell"><span>일상에 자연스럽게 스며드는 서비스</span><div><span>01 <strong>간결한 경험</strong></span><span>02 <strong>안전한 연결</strong></span><span>03 <strong>나만의 공간</strong></span></div></div>
+        <section class="features shell section-space" id="features" aria-labelledby="features-title">
+            <div class="section-heading"><div><p class="eyebrow">THOUGHTFULLY SIMPLE</p><h2 id="features-title">기본에 충실해서,<br>더 편안한 경험.</h2></div><p>처음 만나는 순간부터 매일의 사용까지.<br>꼭 필요한 기능을 한곳에 담았습니다.</p></div>
+            <div class="feature-grid">
+                <article class="feature-card"><div class="feature-top"><span class="feature-icon" aria-hidden="true">↗</span><span>01 / EASY START</span></div><h3>시작은 가볍게</h3><p>아이디와 기본 정보로 계정을 만들고,<br>나만의 서비스를 만나보세요.</p><a href="${signupUrl}">회원가입 알아보기 <span aria-hidden="true">↗</span></a></article>
+                <article class="feature-card"><div class="feature-top"><span class="feature-icon" aria-hidden="true">◇</span><span>02 / SAFE ACCESS</span></div><h3>접속은 안전하게</h3><p>로그인부터 로그아웃까지.<br>안전한 인증으로 내 공간에 접속하세요.</p><a href="${loginUrl}">로그인하기 <span aria-hidden="true">↗</span></a></article>
+                <article class="feature-card feature-card-green"><div class="feature-top"><span class="feature-icon" aria-hidden="true">◎</span><span>03 / YOUR SPACE</span></div><h3>관리는 나답게</h3><p>닉네임부터 이메일까지.<br>내 정보를 한눈에 확인하고 수정하세요.</p><a href="${memberInfoUrl}">내 정보 관리하기 <span aria-hidden="true">↗</span></a></article>
+            </div>
+        </section>
+        <section class="getting-started shell" id="about" aria-labelledby="about-title">
+            <div><p class="eyebrow">MAKE YOURSELF AT HOME</p><h2 id="about-title">세 번의 작은 단계.<br>새로운 시작의 전부.</h2></div>
+            <ol class="steps"><li><span>01</span><div><h3>계정 만들기</h3><p>아이디 중복 확인 후 기본 정보를 입력해 주세요.</p></div></li><li><span>02</span><div><h3>내 공간에 로그인</h3><p>가입한 아이디와 비밀번호로 접속하세요.</p></div></li><li><span>03</span><div><h3>나만의 정보 관리</h3><p>닉네임과 이메일을 언제든 변경할 수 있어요.</p></div></li></ol>
+        </section>
+        <section class="faq shell section-space" id="faq" aria-labelledby="faq-title"><div><p class="eyebrow">A FEW THINGS TO KNOW</p><h2 id="faq-title">궁금한 점이 있나요?</h2></div><div class="faq-list"><details><summary>가입하려면 어떤 정보가 필요한가요?</summary><p>아이디, 비밀번호, 닉네임, 이메일이 필요해요. 회원가입 화면에서 아이디 중복 확인을 먼저 진행해 주세요.</p></details><details><summary>가입한 정보를 변경할 수 있나요?</summary><p>로그인 후 ‘내 정보’에서 닉네임과 이메일을 수정할 수 있어요. 가입한 아이디는 변경할 수 없습니다.</p></details><details><summary>모바일에서도 사용할 수 있나요?</summary><p>네. 스마트폰, 태블릿, PC 화면에 맞춰 편리하게 이용할 수 있어요.</p></details></div></section>
+        <section class="closing shell"><div><p class="eyebrow">YOUR NEXT CHAPTER</p><h2>좋은 시작은, 생각보다 간단해요.</h2><p>지금 나만의 공간을 만들어 보세요.</p></div><sec:authorize access="!isAuthenticated()"><a class="button button-dark" href="${signupUrl}">함께 시작하기 <span aria-hidden="true">↗</span></a></sec:authorize><sec:authorize access="isAuthenticated()"><a class="button button-dark" href="${memberInfoUrl}">내 공간으로 <span aria-hidden="true">↗</span></a></sec:authorize></section>
+    </main>
+    <footer class="site-footer shell"><a class="brand" href="${homeUrl}">MyService<span class="brand-period">.</span></a><p>조금 더 단순하게, 조금 더 나답게.</p><small>© 2026 MyService</small></footer>
+</body>
+</html>
 
-			<!DOCTYPE html>
-			<html lang="ko" xmlns:th="http://www.thymeleaf.org"
-				xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-
-			<head>
-				<meta charset="UTF-8">
-				<meta name="viewport" content="width=device-width, initial-scale=1.0">
-				<title>메인 - My Web Service</title>
-				
-				<!-- Local Tailwind CSS -->
-				<link rel="stylesheet" href="<c:url value='/css/tailwind.css'/>">
-				
-				<!-- Custom CSS -->
-				<link rel="stylesheet" href="<c:url value='/css/main/index.css'/>">
-			</head>
-
-			<body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen">
-
-				<!-- Navigation Header -->
-				<header class="bg-white border-b border-gray-200 sticky top-0 z-50">
-					<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-					
-						<!-- Logo -->
-						<a href="/" th:href="@{/}"
-							class="flex items-center gap-2 text-indigo-600 font-bold text-xl tracking-wide"> <svg
-								class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-							</svg> <span>MyService</span>
-						</a>
-						
-						<!-- Navigation Links -->
-						<nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-600">
-							<a href="#features" class="hover:text-indigo-600 transition">기능 소개</a> <a href="#about"
-								class="hover:text-indigo-600 transition">서비스 안내</a> <a href="#contact"
-								class="hover:text-indigo-600 transition">고객지원</a>
-						</nav>
-						
-						<!-- 로그인하지 않은 사용자 -->
-						<sec:authorize access="!isAuthenticated()">
-							<div class="flex items-center gap-3">
-								<a href="${loginUrl}"
-									class="text-sm font-semibold text-gray-700 hover:text-indigo-600 px-3 py-2 transition">
-									로그인 </a> <a href="${signupUrl}"
-									class="text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg transition shadow-sm">
-									회원가입 </a>
-							</div>
-						</sec:authorize>
-						
-						<!-- 로그인한 사용자 -->
-						<sec:authorize access="isAuthenticated()">
-							<div class="flex items-center gap-3">
-								<span class="text-sm font-semibold text-gray-700">
-									<sec:authentication property="name" />님
-								</span>
-								<form action="${logoutUrl}" method="post">
-									<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
-									<button type="submit"
-										class="text-sm font-semibold text-gray-700 hover:text-indigo-600">로그아웃</button>
-								</form>
-								<a href="${memberInfoUrl}"
-									class="text-sm font-semibold text-gray-700 hover:text-indigo-600 px-3 py-2 transition">
-									내 정보 </a>
-							</div>
-						</sec:authorize>
-					</div>
-				</header>
-
-				<!-- Hero Section -->
-				<section class="bg-gradient-to-b from-indigo-50 to-gray-50 py-20 px-4 sm:px-6 lg:px-8">
-					<div class="max-w-4xl mx-auto text-center">
-						<span
-							class="inline-block bg-indigo-100 text-indigo-700 text-xs font-semibold px-3 py-1 rounded-full mb-4">
-							Spring Boot Web Application </span>
-						<h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight mb-6">
-							더 쉽고 스마트한 <br class="hidden sm:inline" /> 웹 서비스 경험을 시작하세요
-						</h1>
-						<p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">스프링부트 기반의
-							가볍고 강력한 웹 애플리케이션 프레임워크입니다. 회원가입과 로그인을 통해 다양한 맞춤형 서비스를 지금 바로 체험해 보세요.</p>
-
-						<div class="flex flex-col sm:flex-row justify-center gap-4">
-							<a href="#"
-								class="w-full sm:w-auto px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg text-center transition shadow-lg shadow-indigo-200">
-								지금 무료로 시작하기 </a> <a href="#features"
-								class="w-full sm:w-auto px-8 py-3.5 bg-white hover:bg-gray-100 text-gray-700 font-medium rounded-lg text-center border border-gray-300 transition">
-								주요 기능 살펴보기 </a>
-						</div>
-					</div>
-				</section>
-
-				<!-- Feature Section -->
-				<section id="features" class="py-16 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex-grow">
-					<div class="text-center mb-12">
-						<h2 class="text-2xl sm:text-3xl font-bold text-gray-900">제공하는 핵심
-							서비스</h2>
-						<p class="text-gray-500 mt-2 text-sm">안정적이고 빠르게 동작하는 핵심 기능을
-							확인하세요.</p>
-					</div>
-
-					<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-						<!-- Feature 1 -->
-						<div
-							class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition">
-							<div
-								class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center mb-4">
-								<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-										d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-								</svg>
-							</div>
-							<h3 class="text-lg font-bold text-gray-900 mb-2">보안 인증 시스템</h3>
-							<p class="text-sm text-gray-600 leading-relaxed">Spring Security
-								기반의 세션 및 토큰 기반 인증으로 안전한 데이터 보호와 회원 관리를 보장합니다.</p>
-						</div>
-
-						<!-- Feature 2 -->
-						<div
-							class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition">
-							<div
-								class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center mb-4">
-								<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-										d="M13 10V3L4 14h7v7l9-11h-7z" />
-								</svg>
-							</div>
-							<h3 class="text-lg font-bold text-gray-900 mb-2">보안 인증 시스템</h3>
-							<p class="text-sm text-gray-600 leading-relaxed">최적화된 백엔드 구조와
-								경량화된 UI 디자인으로 빠른 페이지 로딩 환경을 제공합니다.</p>
-						</div>
-
-						<!-- Feature 3 -->
-						<div
-							class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition">
-							<div
-								class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center mb-4">
-								<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-										d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-								</svg>
-							</div>
-							<h3 class="text-lg font-bold text-gray-900 mb-2">반응형 디자인</h3>
-							<p class="text-sm text-gray-600 leading-relaxed">모바일, 태블릿, PC 등
-								모든 기기 화면에 맞게 최적화된 화면 구성을 지원합니다.</p>
-						</div>
-					</div>
-				</section>
-
-				<!-- Call to Action Banner -->
-				<section class="bg-indigo-600 py-12 px-4 text-center text-white">
-					<div class="max-w-3xl mx-auto">
-						<h2 class="text-2xl font-bold mb-3">지금 바로 가입하고 모든 기능을 사용해 보세요!</h2>
-						<p class="text-indigo-100 text-sm mb-6">간단한 정보 입력만으로 빠르게 계정을 생성할
-							수 있습니다.</p>
-						<a href="#"
-							class="inline-block bg-white text-indigo-600 font-bold px-6 py-3 rounded-lg hover:bg-indigo-50 transition shadow">
-							무료 회원가입 하기 </a>
-					</div>
-				</section>
-
-				<!-- Footer -->
-				<footer class="bg-white border-t border-gray-200 py-8 px-4 sm:px-6 lg:px-8">
-					<div
-						class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between text-sm text-gray-500">
-						<p>&copy; 2026 MyService Corp. All rights reserved.</p>
-						<div class="flex space-x-6 mt-4 sm:mt-0">
-							<a href="#" class="hover:text-gray-700">이용약관</a>
-							<a href="#" class="hover:text-gray-700">개인정보처리방침</a> 
-							<a href="#" class="hover:text-gray-700">문의하기</a>
-						</div>
-					</div>
-				</footer>
-
-			</html>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.CommentMapper">
+    <sql id="commentColumns">
+        c.ccode, c.bcode, c."idNumber", c.content,
+        c."createdAt", c."updatedAt", m."userName" AS "authorName"
+    </sql>
+
+    <insert id="insertComment" parameterType="com.example.demo.domain.CommentDto"
+            useGeneratedKeys="true" keyProperty="ccode" keyColumn="ccode">
+        INSERT INTO public.comment (bcode, "idNumber", content)
+        VALUES (#{bcode}, #{idNumber}, #{content})
+    </insert>
+
+    <select id="selectOne" resultType="com.example.demo.domain.CommentDto">
+        SELECT <include refid="commentColumns" />
+        FROM public.comment c
+        LEFT JOIN public.member m ON m.number = c."idNumber"
+        WHERE c.ccode = #{ccode}
+    </select>
+
+    <select id="selectList" resultType="com.example.demo.domain.CommentDto">
+        SELECT <include refid="commentColumns" />
+        FROM public.comment c
+        LEFT JOIN public.member m ON m.number = c."idNumber"
+        WHERE c.bcode = #{bcode}
+        ORDER BY c.ccode ASC
+        LIMIT #{cri.amount} OFFSET #{cri.pageStart}
+    </select>
+
+    <select id="countByBoard" resultType="long">
+        SELECT count(*) FROM public.comment WHERE bcode = #{bcode}
+    </select>
+
+    <update id="updateComment" parameterType="com.example.demo.domain.CommentDto">
+        UPDATE public.comment
+        SET content = #{content}
+        WHERE ccode = #{ccode} AND "idNumber" = #{idNumber}
+    </update>
+
+    <delete id="deleteComment">
+        DELETE FROM public.comment
+        WHERE ccode = #{ccode} AND "idNumber" = #{idNumber}
+    </delete>
+</mapper>

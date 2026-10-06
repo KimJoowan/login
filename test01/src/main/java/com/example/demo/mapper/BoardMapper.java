@@ -28,4 +28,6 @@ public interface BoardMapper {
     public int deleteBoard(@Param("bcode") long bcode, @Param("idNumber") long idNumber);
     
     public long total();
+
+    long countMatching(Criteria criteria);
 }

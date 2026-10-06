@@ -58,6 +58,10 @@ public class SecurityConfig {
 						
 						.anyRequest().authenticated())
 
+				.exceptionHandling(exceptions -> exceptions.defaultAuthenticationEntryPointFor(
+						(request, response, exception) -> response.sendError(401),
+						request -> request.getServletPath().startsWith("/api/")))
+
 				// 폼 로그인 설정
 				.formLogin(form -> form.loginPage("/member/login").loginProcessingUrl("/member/login")
 						.usernameParameter("id").passwordParameter("password").successHandler(successHandler)

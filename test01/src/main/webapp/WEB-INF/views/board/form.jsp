@@ -36,9 +36,9 @@
 			</div>
 			<input id="title" name="title" type="text" maxlength="200" required placeholder="이야기의 제목을 적어 주세요" value="<c:out value='${BoardDto.title}'/>" aria-describedby="title-count">
 			<div class="field-heading">
-				<label for="content">내용 <span aria-hidden="true">*</span></label><span>나누고 싶은 이야기를 자유롭게</span>
+				<label for="content">내용 <span aria-hidden="true">*</span></label><span id="content-count">최대 10,000자</span>
 			</div>
-			<textarea id="content" name="content" required rows="14" placeholder="오늘 떠오른 생각, 함께 나누고 싶은 질문…"><c:out value="${BoardDto.content}" /></textarea>
+			<textarea id="content" name="content" maxlength="10000" required rows="14" aria-describedby="content-count" placeholder="오늘 떠오른 생각, 함께 나누고 싶은 질문…"><c:out value="${BoardDto.content}" /></textarea>
 			<p class="editor-hint">서로를 존중하는 글을 작성해 주세요. 개인정보는 포함하지 않는 것이 좋아요.</p>
 			<div class="article-actions">
 				<c:choose>

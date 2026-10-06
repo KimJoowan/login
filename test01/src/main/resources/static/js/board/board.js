@@ -10,8 +10,10 @@ if (editor) {
     const content = editor.querySelector("#content");
     const update = () => {
         document.querySelector("#title-count").textContent = title.value.length + " / 200";
+        document.querySelector("#content-count").textContent = content.value.length.toLocaleString("ko-KR") + " / 10,000";
         title.setCustomValidity(title.value.trim() ? "" : "제목을 입력해 주세요.");
-        content.setCustomValidity(content.value.trim() ? "" : "내용을 입력해 주세요.");
+        content.setCustomValidity(!content.value.trim() ? "내용을 입력해 주세요."
+            : content.value.length > 10000 ? "내용은 10,000자 이하로 입력해 주세요." : "");
     };
     title.addEventListener("input", update);
     content.addEventListener("input", update);

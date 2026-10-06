@@ -8,7 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>게시판 · MyService</title>
 <link rel="stylesheet" href="<c:url value='/css/common.css'/>">
-<link rel="stylesheet" href="<c:url value='/css/board/board.css'/>">
+<link rel="stylesheet" href="<c:url value='/css/board/board.css'><c:param name='v' value='20261001-author-layout-2'/></c:url>">
 <script src="<c:url value='/js/board/board.js'/>" defer></script>
 </head>
 <body>
@@ -40,12 +40,25 @@
 				<div class="panel-heading">
 					<div>
 						<h2 id="posts-title">
-							전체 이야기 <span class="count"><c:out value="${page.total}" /></span>
+							${empty page.cri.keyword ? '전체 이야기' : '검색 결과'} <span class="count"><c:out value="${page.total}" /></span>
 						</h2>
 						<p>가장 최근에 올라온 이야기부터 만나보세요.</p>
 					</div>
 					<a class="button button-green button-small" href="<c:url value='/board/register'/>">글쓰기 <span aria-hidden="true">＋</span></a>
 				</div>
+				<form class="board-search" action="<c:url value='/board/list'/>" method="get" role="search">
+					<label for="searchType">검색 범위</label>
+					<select id="searchType" name="searchType">
+						<option value="all" ${page.cri.searchType == 'all' ? 'selected' : ''}>전체</option>
+						<option value="title" ${page.cri.searchType == 'title' ? 'selected' : ''}>제목</option>
+						<option value="author" ${page.cri.searchType == 'author' ? 'selected' : ''}>작성자</option>
+					</select>
+					<label for="keyword">검색어</label>
+					<input id="keyword" name="keyword" type="search" placeholder="검색어를 입력해 주세요" value="<c:out value='${page.cri.keyword}'/>">
+					<input type="hidden" name="amount" value="${page.cri.amount}">
+					<button class="button button-green button-small" type="submit">검색</button>
+					<c:if test="${not empty page.cri.keyword}"><a class="text-link" href="<c:url value='/board/list'/>">초기화</a></c:if>
+				</form>
 				<div class="table-wrap">
 					<table>
 						<thead>
@@ -64,7 +77,7 @@
 								<tr>
 									<td class="number-col"><c:out value="${board.bcode}" /></td>
 									<td><a class="post-title" href="${detailUrl}"><c:out value="${board.title}" /></a></td>
-									<td class="author-col">회원 <c:out value="${board.idNumber}" /></td>
+									<td class="author-col"><span class="author-name" title="<c:out value='${empty fn:trim(board.authorName) ? "이름 없는 회원" : board.authorName}'/>"><c:out value="${empty fn:trim(board.authorName) ? '이름 없는 회원' : board.authorName}" /></span></td>
 									<td class="date-col"><c:out value="${fn:substring(board.createdAt, 0, 10)}" /></td>
 								</tr>
 							</c:forEach>
@@ -72,9 +85,9 @@
 								<tr>
 									<td colspan="4"><div class="empty-state">
 											<span aria-hidden="true">✳</span>
-											<h3>첫 이야기를 기다리고 있어요.</h3>
-											<p>가벼운 인사로 이 공간을 채워 주세요.</p>
-											<a class="text-link" href="<c:url value='/board/register'/>">첫 글 작성하기 ↗</a>
+											<h3>${empty page.cri.keyword ? '첫 이야기를 기다리고 있어요.' : '검색 결과가 없습니다.'}</h3>
+											<p>${empty page.cri.keyword ? '가벼운 인사로 이 공간을 채워 주세요.' : '다른 검색어나 검색 범위로 다시 찾아보세요.'}</p>
+											<c:if test="${empty page.cri.keyword}"><a class="text-link" href="<c:url value='/board/register'/>">첫 글 작성하기 ↗</a></c:if>
 										</div></td>
 								</tr>
 							</c:if>
@@ -86,14 +99,14 @@
 						<c:if test="${page.prev}">
 							<c:url var="prevUrl" value="/board/list">
 								<c:param name="pageNum" value="${page.startPage - 1}" />
-								<c:param name="amount" value="${page.cri.amount}" />
+								<c:param name="amount" value="${page.cri.amount}" /><c:param name="keyword" value="${page.cri.keyword}" /><c:param name="searchType" value="${page.cri.searchType}" />
 							</c:url>
 							<a href="${prevUrl}" aria-label="이전 페이지 묶음">←</a>
 						</c:if>
 						<c:forEach begin="${page.startPage}" end="${page.endPage}" var="number">
 							<c:url var="pageUrl" value="/board/list">
 								<c:param name="pageNum" value="${number}" />
-								<c:param name="amount" value="${page.cri.amount}" />
+								<c:param name="amount" value="${page.cri.amount}" /><c:param name="keyword" value="${page.cri.keyword}" /><c:param name="searchType" value="${page.cri.searchType}" />
 							</c:url>
 							<c:choose>
 								<c:when test="${number == page.cri.pageNum}">
@@ -107,7 +120,7 @@
 						<c:if test="${page.next}">
 							<c:url var="nextUrl" value="/board/list">
 								<c:param name="pageNum" value="${page.endPage + 1}" />
-								<c:param name="amount" value="${page.cri.amount}" />
+								<c:param name="amount" value="${page.cri.amount}" /><c:param name="keyword" value="${page.cri.keyword}" /><c:param name="searchType" value="${page.cri.searchType}" />
 							</c:url>
 							<a href="${nextUrl}" aria-label="다음 페이지 묶음">→</a>
 						</c:if>

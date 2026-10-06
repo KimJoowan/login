@@ -39,9 +39,11 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public BoardDto selectOne(long bcode) {
         BoardDto board = boardMapper.selectOne(bcode);
+        
         if (board == null) {
             throw new BoardNotFoundException();
         }
+        
         return board;
     }
 
@@ -54,9 +56,9 @@ public class BoardServiceImpl implements BoardService {
     @Override
     @Transactional
     public void updateBoard(String id, BoardDto board) {
+        // Ignore the author supplied in the request; enforce ownership in the UPDATE.
         int num = memberMapper.getById(id);
         board.setIdNumber(num);
-
         if (boardMapper.updateBoard(board) != 1) {
             throw new BoardNotFoundException();
         }
@@ -75,6 +77,11 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public long total() {
         return boardMapper.total();
+    }
+
+    @Override
+    public long total(Criteria criteria) {
+        return boardMapper.countMatching(criteria);
     }
 
 }

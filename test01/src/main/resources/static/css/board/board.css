@@ -164,8 +164,24 @@ tbody tr:hover {
 	width: 95px;
 }
 
+td.author-col {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.author-name {
+	display: block;
+	width: 100%;
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
 .date-col {
 	width: 110px;
+	white-space: nowrap;
 }
 
 .post-title {
@@ -512,3 +528,8 @@ tbody tr:hover {
 		font-size: 10px;
 	}
 }
+.board-search { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 16px 24px; border-bottom: 1px solid #e4e8e1; }
+.board-search input, .board-search select { min-height: 44px; border: 1px solid #cdd5c9; border-radius: 8px; padding: 8px 12px; background: white; font: inherit; }
+.board-search input[type="search"] { flex: 1; min-width: 160px; width: auto; }
+.board-search label { font-size: 13px; }
+@media (max-width: 600px) { .board-search { padding: 16px; } .board-search input[type="search"] { flex-basis: 65%; } }

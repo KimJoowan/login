@@ -35,18 +35,54 @@ document.addEventListener("DOMContentLoaded", () => {
 	
 	// 재요청 가능한 시각
 	let retryAllowedAt = 0;
-	
-	const remainingSeconds = Math.ceil(
-	    (retryAllowedAt - Date.now()) / 1000
-	);
 
-	if (remainingSeconds > 0) {
-	    showUsernameMessage(
-	        `${remainingSeconds}초 후 다시 시도해주세요.`,
-	        "error"
+	checkIdButton.addEventListener("click", async () => {
+
+	    const remainingSeconds = Math.ceil(
+	        (retryAllowedAt - Date.now()) / 1000
 	    );
-	    return;
-	}
+
+	    if (remainingSeconds > 0) {
+	        message.textContent =
+	            `${remainingSeconds}초 후 다시 시도해주세요.`;
+	        return;
+	    }
+
+	    try {
+	        const response = await fetch(
+	            `/member/check-id?id=${encodeURIComponent(idInput.value)}`
+	        );
+
+	        if (response.status === 429) {
+	            const retryAfter =
+	                Number(response.headers.get("Retry-After")) || 60;
+
+	            retryAllowedAt =
+	                Date.now() + retryAfter * 1000;
+
+	            message.textContent =
+	                `${retryAfter}초 후 다시 시도해주세요.`;
+
+	            return;
+	        }
+
+	        if (!response.ok) {
+	            throw new Error("아이디 중복 확인 실패");
+	        }
+
+	        const data = await response.json();
+
+	        if (data.isDuplicate) {
+	            message.textContent = "이미 사용 중인 아이디입니다.";
+	        } else {
+	            message.textContent = "사용 가능한 아이디입니다.";
+	        }
+
+	    } catch (error) {
+	        console.error(error);
+	        message.textContent = "중복 확인 중 오류가 발생했습니다.";
+	    }
+	});
 	
 	
 	

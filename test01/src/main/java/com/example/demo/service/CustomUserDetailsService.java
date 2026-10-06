@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.domain.MemberDto;
 import com.example.demo.mapper.AccountLockMapper;
+import com.example.demo.mapper.BoardMapper;
 import com.example.demo.mapper.MemberMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 	
     private final MemberMapper memberMapper;
     private final AccountLockMapper accountLockMapper;
+    private final BoardMapper boardMapper;
 
     @Override
     public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
@@ -27,6 +29,11 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (member == null) {
             throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
         }
+        
+        
+        
+        
+        
              
         Boolean loginAllowed = accountLockMapper.isLoginAllowed(member.getNumber());
 

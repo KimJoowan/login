@@ -10,6 +10,17 @@ import lombok.ToString;
 public class Criteria {
 	private long pageNum;
 	private long amount;	  
+	private String keyword = "";
+	private String searchType = "all";
+
+	public void setKeyword(String keyword) {
+		this.keyword = keyword == null ? "" : keyword.strip();
+	}
+
+	public void setSearchType(String searchType) {
+		this.searchType = java.util.Set.of("title", "author").contains(searchType == null ? "" : searchType)
+				? searchType : "all";
+	}
 	
 	public Criteria() {
 		this(1, 10);

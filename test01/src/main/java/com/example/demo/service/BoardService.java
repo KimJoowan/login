@@ -15,9 +15,12 @@ public interface BoardService {
 
     List<BoardDto> selectList(String id);
 
+    // id must come from the authenticated principal, never from a request body.
     void updateBoard(String id, BoardDto board);
 
     void deleteBoard(String id, long bcode);
 
     long total();
+
+    long total(Criteria criteria);
 }
